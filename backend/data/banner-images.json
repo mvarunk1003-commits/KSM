@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1755180598930,
+    "title": "Sringeri ",
+    "description": "temple",
+    "images": [
+      "/assets/temple.png"
+    ],
+    "date": "2025-08-14"
+  },
+  {
+    "id": 1755844221841,
+    "title": "banner",
+    "description": "",
+    "images": [
+      "/assets/banner.png"
+    ],
+    "date": "2025-08-22"
+  },
+  {
+    "id": 1755848093825,
+    "title": "Banner",
+    "description": "",
+    "images": [
+      "/assets/banner_1755848093803.webp"
+    ],
+    "date": "2025-08-22"
+  }
+]

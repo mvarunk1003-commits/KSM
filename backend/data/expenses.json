@@ -1,0 +1,515 @@
+[
+  {
+    "id": "1791026846122_1",
+    "title": "WELDING WORKS",
+    "amount": 4000,
+    "category": "General Expense",
+    "date": "2025-09-20",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.122Z"
+  },
+  {
+    "id": "1791026846122_2",
+    "title": "MANJU FLOWERS ADVANCE",
+    "amount": 1000,
+    "category": "Flowers",
+    "date": "2025-09-20",
+    "description": "Advance",
+    "createdAt": "2026-10-03T11:27:26.122Z"
+  },
+  {
+    "id": "1791026846122_3",
+    "title": "AUTO RAVI",
+    "amount": 300,
+    "category": "Transportation",
+    "date": "2025-09-20",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.122Z"
+  },
+  {
+    "id": "1791026846122_4",
+    "title": "MOMENTOS - BUS CHARGES",
+    "amount": 500,
+    "category": "Transportation",
+    "date": "2025-09-20",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.122Z"
+  },
+  {
+    "id": "1791026846122_5",
+    "title": "GENERATOR ELECTRICIAN",
+    "amount": 300,
+    "category": "Electrical",
+    "date": "2025-09-20",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.122Z"
+  },
+  {
+    "id": "1791026846122_6",
+    "title": "STREET SERIAL LIGHTS PERMISSION",
+    "amount": 600,
+    "category": "Event Expense",
+    "date": "2025-09-20",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.122Z"
+  },
+  {
+    "id": "1791026846122_7",
+    "title": "AUTO, MILL OTHERS",
+    "amount": 200,
+    "category": "Transportation",
+    "date": "2025-09-20",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.122Z"
+  },
+  {
+    "id": "1791026846123_8",
+    "title": "SRIKANTAN BANNER + TRANSPORTATION",
+    "amount": 1550,
+    "category": "Printing & Transportation",
+    "date": "2025-09-21",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_9",
+    "title": "DEVRAJ - PETROL EXPENSE",
+    "amount": 1000,
+    "category": "Fuel",
+    "date": "2025-09-21",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_10",
+    "title": "SHED MATERIALS FOR GENERATOR",
+    "amount": 8500,
+    "category": "Materials",
+    "date": "2025-09-21",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_11",
+    "title": "DRY COCONUT POWDER",
+    "amount": 9500,
+    "category": "Pooja Materials",
+    "date": "2025-09-21",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_12",
+    "title": "CULTURAL PROGRAM - T V RAJAGOPALACHARI, MALUR",
+    "amount": 3500,
+    "category": "Cultural Program",
+    "date": "2025-09-21",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_13",
+    "title": "MUNIRAJU LIGHTING",
+    "amount": 10000,
+    "category": "Lighting",
+    "date": "2025-09-22",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_14",
+    "title": "BASANTH - SHWALS",
+    "amount": 2000,
+    "category": "Event Materials",
+    "date": "2025-09-22",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_15",
+    "title": "CULTURAL PROGRAM - BHARATHANATYAM",
+    "amount": 8500,
+    "category": "Cultural Program",
+    "date": "2025-09-24",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_16",
+    "title": "MUNIRAJU LIGHTING",
+    "amount": 5000,
+    "category": "Lighting",
+    "date": "2025-09-24",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_17",
+    "title": "CULTURAL PROGRAM - BRAMHENDRA",
+    "amount": 7500,
+    "category": "Cultural Program",
+    "date": "2025-09-24",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_18",
+    "title": "CULTURAL PROGRAM - VIADEHI",
+    "amount": 4500,
+    "category": "Cultural Program",
+    "date": "2025-09-26",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_19",
+    "title": "CULTURAL PROGRAM - VINAY SHARVA",
+    "amount": 21000,
+    "category": "Cultural Program",
+    "date": "2025-09-27",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_20",
+    "title": "SOUNDARYA LAHARI NRUTHYA RUPAKA",
+    "amount": 5000,
+    "category": "Cultural Program",
+    "date": "2025-09-28",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_21",
+    "title": "CULTURAL PROGRAM - VEENA DUAL CONCERT",
+    "amount": 17000,
+    "category": "Cultural Program",
+    "date": "2025-09-29",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_22",
+    "title": "IDOL VAHANA'S",
+    "amount": 25000,
+    "category": "Religious/Event Expense",
+    "date": "2025-09-30",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_23",
+    "title": "HOMA DRAVA EXPENSE",
+    "amount": 500,
+    "category": "Pooja Materials",
+    "date": "2025-09-30",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_24",
+    "title": "DEVRAJ - FOR EXPENSE",
+    "amount": 1000,
+    "category": "General Expense",
+    "date": "2025-09-30",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_25",
+    "title": "RUKMANI - FOR EXPENSE",
+    "amount": 2000,
+    "category": "General Expense",
+    "date": "2025-09-30",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_26",
+    "title": "CULTURAL PROGRAM - INDIRA SHARMA",
+    "amount": 15000,
+    "category": "Cultural Program",
+    "date": "2025-09-30",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_27",
+    "title": "CULTURAL PROGRAM - MANOJ SHARMA",
+    "amount": 8000,
+    "category": "Cultural Program",
+    "date": "2025-10-01",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_28",
+    "title": "MUNIRAJU LIGHTING",
+    "amount": 5000,
+    "category": "Lighting",
+    "date": "2025-10-01",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_29",
+    "title": "CART REPAIR CHARGES - HOBBY RAMESH",
+    "amount": 2500,
+    "category": "Repairs",
+    "date": "2025-10-02",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_30",
+    "title": "DEVRAJ - MILL AND OTHERS",
+    "amount": 1000,
+    "category": "General Expense",
+    "date": "2025-10-02",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_31",
+    "title": "SUMANGALI POOJA DAKSHINE",
+    "amount": 1900,
+    "category": "Pooja Expense",
+    "date": "2025-10-02",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_32",
+    "title": "MANJU FLOWERS ADVANCE",
+    "amount": 2000,
+    "category": "Flowers",
+    "date": "2025-10-02",
+    "description": "Advance",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_33",
+    "title": "BALE EELI",
+    "amount": 2300,
+    "category": "Event Materials",
+    "date": "2025-10-03",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_34",
+    "title": "SAMBHAVANE FOR RUTVIJAS",
+    "amount": 13500,
+    "category": "Religious Expense",
+    "date": "2025-10-03",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_35",
+    "title": "LED + VIDEO FOR CHANDI HOMA",
+    "amount": 7500,
+    "category": "Audio Visual",
+    "date": "2025-10-03",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_36",
+    "title": "TIPS FOR COOK",
+    "amount": 300,
+    "category": "Hospitality",
+    "date": "2025-10-03",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_37",
+    "title": "RAMESH - COOK",
+    "amount": 72000,
+    "category": "Food & Catering",
+    "date": "2025-10-03",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_38",
+    "title": "CULTURAL PROGRAM - HINDUSTANI",
+    "amount": 12000,
+    "category": "Cultural Program",
+    "date": "2025-10-03",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_39",
+    "title": "MUNICIPALITY CLEANING CHARGES",
+    "amount": 400,
+    "category": "Cleaning",
+    "date": "2025-10-03",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_40",
+    "title": "MILK & CURD",
+    "amount": 4850,
+    "category": "Food & Dairy",
+    "date": "2025-10-03",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_41",
+    "title": "DEVARAJAPPA",
+    "amount": 1000,
+    "category": "General Expense",
+    "date": "2025-10-16",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_42",
+    "title": "LOTUS & PARROT FOR KIS - SRINIVAS T R",
+    "amount": 900,
+    "category": "Decoration",
+    "date": "2025-09-20",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_43",
+    "title": "STAMPS, COFFEE",
+    "amount": 500,
+    "category": "Office/Hospitality",
+    "date": "2025-10-20",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_44",
+    "title": "BROOM STICKS & OTHERS",
+    "amount": 300,
+    "category": "Cleaning Materials",
+    "date": "2025-10-20",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_45",
+    "title": "MILL - DEVRAJAPPA",
+    "amount": 1200,
+    "category": "General Expense",
+    "date": "2025-10-21",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_46",
+    "title": "WATER CANS",
+    "amount": 2600,
+    "category": "Water",
+    "date": "2025-09-23",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_47",
+    "title": "SHWALS - BASANTH",
+    "amount": 7000,
+    "category": "Event Materials",
+    "date": "2025-09-23",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_48",
+    "title": "BANANAS",
+    "amount": 5400,
+    "category": "Food & Fruits",
+    "date": "2025-09-23",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_49",
+    "title": "SINAPPA - CLEANING CHARGES",
+    "amount": 500,
+    "category": "Cleaning",
+    "date": "2025-09-29",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_50",
+    "title": "PINEAPPLE & OTHERS",
+    "amount": 500,
+    "category": "Food & Fruits",
+    "date": "2025-09-29",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_51",
+    "title": "VEGETABLE ALANKARA EXPENSE",
+    "amount": 210,
+    "category": "Decoration",
+    "date": "2025-10-29",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_52",
+    "title": "COFFEE- BAJJI",
+    "amount": 200,
+    "category": "Food & Refreshments",
+    "date": "2025-10-01",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_53",
+    "title": "PLATES",
+    "amount": 2000,
+    "category": "Catering Materials",
+    "date": "2025-10-02",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_54",
+    "title": "PLATES - GLASS - BAGS",
+    "amount": 3540,
+    "category": "Catering Materials",
+    "date": "2025-10-03",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_55",
+    "title": "VEGETABLES",
+    "amount": 1500,
+    "category": "Food & Vegetables",
+    "date": "2025-09-22",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_56",
+    "title": "MILK & CURD",
+    "amount": 2000,
+    "category": "Food & Dairy",
+    "date": "2025-09-22",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  },
+  {
+    "id": "1791026846123_57",
+    "title": "MILK FOR COFFEES",
+    "amount": 1718,
+    "category": "Food & Dairy",
+    "date": "2025-09-22",
+    "description": "",
+    "createdAt": "2026-10-03T11:27:26.123Z"
+  }
+]

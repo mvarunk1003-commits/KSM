@@ -1,0 +1,20 @@
+{
+  "short_name": "Kolar Mutt",
+  "name": "Kolar Sringeri SriShankara Mutt | ಕೋಲಾರ ಶೃಂಗೇರಿ ಶ್ರೀಶಂಕರ ಮಠ",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#7D1A1A",
+  "background_color": "#FAF7F2"
+}

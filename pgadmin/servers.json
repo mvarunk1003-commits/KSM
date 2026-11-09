@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "KSM Temple PostgreSQL (AWS ap-south-1)",
+      "Group": "KSM Production",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "ksm_temple_db",
+      "Username": "postgres",
+      "SSLMode": "prefer",
+      "Favorite": true
+    }
+  }
+}

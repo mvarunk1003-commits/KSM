@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Secrets and Private Keys
+*.pem
+*.key
+*.ppk
+keys/
+.env
+.env.local
+.env.production
+
+# Build outputs
+build/
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# System
+.DS_Store
+Thumbs.db

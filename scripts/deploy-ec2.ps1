@@ -25,7 +25,6 @@ param (
 Write-Host "🏛️ ==================================================================" -ForegroundColor Yellow
 Write-Host "   Deploying KSM Stack to AWS EC2 (ap-south-1 Mumbai)" -ForegroundColor Cyan
 Write-Host "   Host: $Ec2Host ($SshUser)" -ForegroundColor White
-Write-Host "   AWS Account ID: 2777-3120-8394" -ForegroundColor White
 Write-Host "   PEM Key: $PemKeyPath" -ForegroundColor White
 Write-Host "=====================================================================" -ForegroundColor Yellow
 
@@ -62,6 +61,5 @@ Write-Host "`n==================================================================
 Write-Host "🎉 DEPLOYMENT COMPLETE!" -ForegroundColor Green
 Write-Host "📍 Backend API URL: http://${Ec2Host}:5000/api" -ForegroundColor Cyan
 Write-Host "📍 pgAdmin Web GUI: http://${Ec2Host}:5050" -ForegroundColor Cyan
-Write-Host "   pgAdmin Username: admin@kolarshankaramutt.org" -ForegroundColor White
-Write-Host "   pgAdmin Password: KolarMutt2024!" -ForegroundColor White
+Write-Host "   (pgAdmin credentials configured via environment / .env)" -ForegroundColor White
 Write-Host "=====================================================================" -ForegroundColor Green

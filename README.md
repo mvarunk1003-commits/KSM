@@ -96,7 +96,7 @@ npm start
 - **Backend API:** `http://localhost:5000/api`
 - **Admin ERP Dashboard:** `http://localhost:3000/admin`
   - **Default Username:** `admin`
-  - **Default Password:** `KolarMutt2024!`
+  - **Default Password:** Set via environment or initial seed configuration
 
 ---
 
@@ -122,9 +122,9 @@ npm run build
 ---
 
 ## 🎨 Asset & Image System
-- **Central Storage:** All temple photography, banners, and circulars are stored in [`frontend/public/assets/`](file:///f:/KSM/frontend/public/assets/).
-- **Official Banner:** Native high-resolution uncropped masthead at [`frontend/public/assets/banner.png`](file:///f:/KSM/frontend/public/assets/banner.png) (2113×463).
-- **Temple Seal:** Sacred golden Sringeri Sharada Peetham seal at [`frontend/public/assets/temple_seal.png`](file:///f:/KSM/frontend/public/assets/temple_seal.png) and [`frontend/public/favicon.png`](file:///f:/KSM/frontend/public/favicon.png).
+- **Central Storage:** All temple photography, banners, and circulars are stored in [`frontend/public/assets/`](frontend/public/assets/).
+- **Official Banner:** Native high-resolution uncropped masthead at [`frontend/public/assets/banner.png`](frontend/public/assets/banner.png) (2113×463).
+- **Temple Seal:** Sacred golden Sringeri Sharada Peetham seal at [`frontend/public/assets/temple_seal.png`](frontend/public/assets/temple_seal.png) and [`frontend/public/favicon.png`](frontend/public/favicon.png).
 
 ---
 
@@ -132,8 +132,6 @@ npm run build
 
 - **Cloud Provider:** Amazon Web Services (AWS)
 - **Region:** Asia Pacific — Mumbai (`ap-south-1`)
-- **Account ID:** `2777-3120-8394`
-- **EC2 Console:** [https://ap-south-1.console.aws.amazon.com/ec2/home?region=ap-south-1#Home:](https://ap-south-1.console.aws.amazon.com/ec2/home?region=ap-south-1#Home:)
 - **Database Engine:** PostgreSQL 16 + pgAdmin 4
 - **Containerization:** Docker & Docker Compose
 - **CI/CD Pipeline:** Jenkinsfile with Private PEM Key SSH Deployment
@@ -150,7 +148,7 @@ docker exec ksm-backend npm run migrate
 Access points:
 - **Backend API:** `http://localhost:5000/api`
 - **Health Check:** `http://localhost:5000/api/health`
-- **pgAdmin 4 GUI:** `http://localhost:5050` (User: `admin@kolarshankaramutt.org`, Pass: `KolarMutt2024!`)
+- **pgAdmin 4 GUI:** `http://localhost:5050` (Configured via `docker-compose.yml` / `.env`)
 
 ### 🔑 1-Click AWS EC2 Deployment via Private PEM Key
 ```powershell

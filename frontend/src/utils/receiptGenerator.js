@@ -4,6 +4,8 @@
  * Branch of Dakshinamnaya Sringeri Sri Sharada Peetham
  */
 
+import { TEMPLE_INFO, BANK_DETAILS } from '../config/templeConfig';
+
 // Convert integer/float to Indian currency words
 export function numberToIndianWords(num) {
   const n = Math.floor(Number(num) || 0);
@@ -49,7 +51,7 @@ export function numberToIndianWords(num) {
  */
 export function generateReceiptLetterheadHtml(donation) {
   const receiptNo = donation.receiptNumber || `KSM/SEVA/${new Date().getFullYear()}/${String(donation.id || Date.now()).slice(-5)}`;
-  const dateStr = donation.date 
+  const dateStr = donation.date
     ? new Date(donation.date).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })
     : new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
   const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
@@ -455,7 +457,7 @@ export function generateReceiptLetterheadHtml(donation) {
 
   <!-- Screen Action Bar (Hidden when Printing) -->
   <div class="screen-controls" role="toolbar" aria-label="Receipt Actions">
-    <div class="brand">Kolar Sringeri SriShankara Mutt • Official Letterhead Receipt</div>
+    <div class="brand">Kolar Sringeri SriShankara Mutt • Receipt</div>
     <div class="btn-group">
       <button class="screen-btn" onclick="window.print()">
         Print / Save PDF
@@ -473,22 +475,22 @@ export function generateReceiptLetterheadHtml(donation) {
     <!-- Official Peetham Heading with Seal -->
     <div class="peetham-header">
       <img 
-        src="/assets/temple_seal.png" 
+        src="${TEMPLE_INFO.sealImage}" 
         alt="Sringeri Peetham Sacred Seal" 
         class="peetham-seal"
         onerror="this.style.display='none'"
       />
       <div class="peetham-titles">
-        <div class="peetham-kannada">॥ ಶ್ರೀ ಶೃಂಗೇರಿ ಶಾರದಾ ಪೀಠಮ್ ಶಾಖಾ ಮಠ, ಕೋಲಾರ ॥</div>
-        <div class="peetham-lineage">Dakshinamnaya Sringeri Sri Sharada Peetham Branch</div>
-        <h1 class="peetham-name">Kolar Sringeri SriShankara Mutt</h1>
+        <div class="peetham-kannada">${TEMPLE_INFO.lineageKannada}</div>
+        <div class="peetham-lineage">${TEMPLE_INFO.lineage}</div>
+        <h1 class="peetham-name">${TEMPLE_INFO.name}</h1>
         <div class="peetham-contact">
-          Kote, Kolar, Karnataka &ndash; 563101, India &bull; Helpline: +91 83101 51359 &bull; Email: info@kolarshankaramutt.org
+          ${TEMPLE_INFO.addressFull} &bull; Helpline: ${TEMPLE_INFO.phone} &bull; Email: ${TEMPLE_INFO.email}
         </div>
-        <div class="peetham-shloka">॥ ॐ ಶ್ರೀ ಶಾರದಾಂಬಾ ಪ್ರಸನ್ನ ॐ ॥ अहं ब्रह्माಸ್ಮಿ ॥</div>
+        <div class="peetham-shloka">${TEMPLE_INFO.shloka}</div>
       </div>
       <img 
-        src="/assets/temple_seal.png" 
+        src="${TEMPLE_INFO.sealImage}" 
         alt="Sringeri Peetham Sacred Seal" 
         class="peetham-seal"
         onerror="this.style.display='none'"
@@ -497,9 +499,9 @@ export function generateReceiptLetterheadHtml(donation) {
 
     <!-- Official Receipt Title Ribbon -->
     <div class="receipt-title-ribbon">
-      <div class="ribbon-kannada">ಧಾರ್ಮಿಕ ಕಾಣಿಕೆ ರಸೀದಿ</div>
+      <div class="ribbon-kannada">ಕಾಣಿಕೆ ರಸೀದಿ</div>
       <div class="ribbon-title">OFFICIAL SEVA &amp; DONATION RECEIPT</div>
-      <div class="ribbon-kannada">ಸೇವೆ / ಸಂಭಾವನೆ</div>
+      <div class="ribbon-kannada">ಸೇವೆ</div>
     </div>
 
     <!-- Metadata Bar -->
@@ -524,9 +526,7 @@ export function generateReceiptLetterheadHtml(donation) {
 
     <!-- Receipt Body Content -->
     <div class="receipt-body">
-      <div class="receipt-watermark" aria-hidden="true">ॐ</div>
-
-      <!-- Devotee Information -->
+            <!-- Devotee Information -->
       <div class="receipt-section-title">Devotee Information / ಭಕ್ತರ ವಿವರ</div>
       <table class="detail-table">
         <tbody>
@@ -583,6 +583,29 @@ export function generateReceiptLetterheadHtml(donation) {
         </div>
       </div>
 
+      <!-- Bank Transfer Details -->
+      <div class="receipt-section-title">Bank Transfer Details / ಬ್ಯಾಂಕ್ ವಿವರ</div>
+      <table class="detail-table">
+        <tbody>
+          <tr>
+            <td class="col-label">Account Name:</td>
+            <td class="col-val"><strong>${BANK_DETAILS.accountName}</strong></td>
+          </tr>
+          <tr>
+            <td class="col-label">Account Number:</td>
+            <td class="col-val"><strong>${BANK_DETAILS.accountNumber}</strong></td>
+          </tr>
+          <tr>
+            <td class="col-label">IFSC Code:</td>
+            <td class="col-val">${BANK_DETAILS.ifsc}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Bank &amp; Branch:</td>
+            <td class="col-val">${BANK_DETAILS.bankName}, ${BANK_DETAILS.branch}</td>
+          </tr>
+        </tbody>
+      </table>
+
       <!-- Sacred Benediction -->
       <div class="benediction-box">
         <strong>॥ ಆಶೀರ್ವಚನ &bull; Sacred Peetham Benediction ॥</strong><br />
@@ -592,13 +615,13 @@ export function generateReceiptLetterheadHtml(donation) {
       <!-- Signoff and Seal -->
       <div class="signoff-section">
         <div class="signoff-left">
-          <p><strong>Official Digital Receipt:</strong> This is a computer-verified, system-authenticated record issued under the authority of Kolar Sringeri SriShankara Mutt.</p>
+          <p><strong>Official Digital Receipt:</strong> This is a computer-verified, system-authenticated record issued under the authority of ${TEMPLE_INFO.name}.</p>
           <p style="margin-top: 4px;">Donations utilized towards religious poojas, Annadanam, and Veda Pathashala activities.</p>
         </div>
         <div class="signoff-right">
           <div class="signature-line">
             <div class="signatory-title">Authorized Signatory / Dharmadhikari</div>
-            <div class="signatory-sub">Kolar Sringeri SriShankara Mutt</div>
+            <div class="signatory-sub">${TEMPLE_INFO.name}</div>
           </div>
         </div>
       </div>
@@ -606,7 +629,7 @@ export function generateReceiptLetterheadHtml(donation) {
 
     <!-- Bottom Ribbon -->
     <div class="letterhead-bottom-ribbon">
-      ॥ ಶ್ರೀ ಶಾರದಾಂಬಾ ಸನ್ನಿಧಿ &bull; ಕೋಲಾರ ಶೃಂಗೇರಿ ಶ್ರೀಶಂಕರ ಮಠ &bull; www.kolarshankaramutt.org ॥
+      ॥ ಶ್ರೀ ಶಾರದಾಂಬಾ ಸನ್ನಿಧಿ &bull; ${TEMPLE_INFO.name} &bull; ${TEMPLE_INFO.website} ॥
     </div>
 
   </div>

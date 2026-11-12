@@ -7,6 +7,7 @@ import Activities from './pages/Activities';
 import Announcements from './pages/Announcements';
 import Contact from './pages/Contact';
 import Donation from './pages/Donation';
+import Payment from './pages/Payment';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 
@@ -58,6 +59,7 @@ function App() {
           <Route path="/announcements" element={<Announcements />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/donation" element={<Donation />} />
+          <Route path="/payment" element={<Payment />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
         </Routes>

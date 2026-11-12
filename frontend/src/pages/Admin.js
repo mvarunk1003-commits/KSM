@@ -1286,12 +1286,15 @@ export default function Admin() {
 
   // Approvals Workflow View
   const renderApprovals = () => {
+    const pendingCount = donations.filter(d => (d.status || '').toLowerCase() === 'pending').length;
     return (
       <div className="card">
         <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h2 className="card-title">Verification &amp; Approval Workflows</h2>
-            <p style={{ margin: 0, color: 'var(--text-muted)' }}>Review incoming donations and financial postings</p>
+            <p style={{ margin: 0, color: 'var(--text-muted)' }}>
+              Review incoming online devotee donations and financial postings ({pendingCount} Pending Verification)
+            </p>
           </div>
         </div>
 
@@ -1299,14 +1302,14 @@ export default function Admin() {
           { key: 'donorName', label: 'Donor Name' },
           { key: 'amount', label: 'Amount', render: (val) => <strong>₹{parseFloat(val || 0).toLocaleString('en-IN')}</strong> },
           { key: 'purpose', label: 'Purpose' },
-          { key: 'paymentMethod', label: 'Payment Method' },
+          { key: 'transactionId', label: 'Transaction ID / UTR', render: (val, item) => <code>{val || item.transactionRef || '-'}</code> },
           { 
             key: 'status', 
             label: 'Current Status', 
             render: (val, item) => (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span className={`status-badge ${(val || 'received').toLowerCase()}`}>
-                  {val || 'Received'}
+                  {(val || 'received').toLowerCase() === 'pending' ? 'Pending Approval' : 'Approved'}
                 </span>
                 <select
                   value={val || 'received'}
@@ -1320,6 +1323,43 @@ export default function Admin() {
                 </select>
               </div>
             ) 
+          },
+          {
+            key: 'action',
+            label: 'Approval & Receipt',
+            render: (_, item) => {
+              const isApproved = (item.status || '').toLowerCase() === 'received' || (item.status || '').toLowerCase() === 'approved';
+              return isApproved ? (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-primary"
+                  onClick={() => handleGenerateReceipt(item)}
+                >
+                  View Receipt
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-sm"
+                  style={{
+                    background: '#16A34A',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '5px 12px',
+                    borderRadius: '4px',
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    cursor: 'pointer'
+                  }}
+                  onClick={async () => {
+                    await handleUpdateStatus('donations', item, 'received');
+                    handleGenerateReceipt({ ...item, status: 'received' });
+                  }}
+                >
+                  ✓ Approve &amp; Generate Receipt
+                </button>
+              );
+            }
           },
           { key: 'date', label: 'Date', render: (val) => val ? new Date(val).toLocaleDateString('en-IN') : '-' }
         ])}
@@ -1976,6 +2016,43 @@ export default function Admin() {
             <div style={{ height: '3px', background: 'linear-gradient(90deg, var(--primary), var(--accent))', width: '100%', marginBottom: '16px', borderRadius: '2px' }} />
           )}
 
+          {/* Pending Verification Notice Banner */}
+          {donations.filter(d => (d.status || '').toLowerCase() === 'pending').length > 0 && activeTab !== 'approvals' && (
+            <div
+              style={{
+                background: '#FEF3C7',
+                border: '1px solid #F59E0B',
+                borderRadius: '6px',
+                padding: '12px 18px',
+                marginBottom: '16px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                color: '#92400E'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '1.3rem' }}>🔔</span>
+                <div>
+                  <strong>
+                    {donations.filter(d => (d.status || '').toLowerCase() === 'pending').length} Devotee Offering(s) Pending Verification
+                  </strong>
+                  <div style={{ fontSize: '0.82rem', color: '#B45309' }}>
+                    Online payment submitted by devotee. Review and approve to generate official letterhead receipt.
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn btn-sm btn-primary"
+                onClick={() => switchTab('approvals')}
+                style={{ fontSize: '0.8rem', padding: '6px 14px' }}
+              >
+                Review &amp; Approve &rarr;
+              </button>
+            </div>
+          )}
+
           {/* TAB 1: DASHBOARD */}
           {activeTab === 'dashboard' && renderDashboard()}
 
@@ -2113,16 +2190,41 @@ export default function Admin() {
                 {
                   key: 'receipt',
                   label: 'Letterhead Receipt',
-                  render: (_, item) => (
-                    <button 
-                      type="button" 
-                      className="btn btn-sm btn-primary"
-                      onClick={() => handleGenerateReceipt(item)}
-                      title="View and print official letterhead receipt"
-                    >
-                      Receipt
-                    </button>
-                  )
+                  render: (_, item) => {
+                    const statusStr = (item.status || 'received').toLowerCase();
+                    const isApproved = statusStr === 'received' || statusStr === 'approved';
+                    return isApproved ? (
+                      <button 
+                        type="button" 
+                        className="btn btn-sm btn-primary"
+                        onClick={() => handleGenerateReceipt(item)}
+                        title="View and print official letterhead receipt"
+                      >
+                        Receipt
+                      </button>
+                    ) : (
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <button
+                          type="button"
+                          className="btn btn-sm"
+                          style={{
+                            background: '#16A34A',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            padding: '4px 10px',
+                            borderRadius: '4px',
+                            fontWeight: 600,
+                            fontSize: '0.75rem',
+                            cursor: 'pointer'
+                          }}
+                          onClick={() => handleUpdateStatus('donations', item, 'received')}
+                          title="Verify payment and approve receipt generation"
+                        >
+                          ✓ Approve &amp; Enable
+                        </button>
+                      </div>
+                    );
+                  }
                 }
               ])}
             </div>

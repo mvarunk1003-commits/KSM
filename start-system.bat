@@ -24,7 +24,7 @@ echo    Admin Panel: http://localhost:3000/admin
 echo.
 echo 🔑 Default Admin Credentials:
 echo    Username: admin
-echo    Password: KolarMutt2024!
+echo    Password: (See configured credentials in backend/data/admins.json or .env)
 echo.
 echo Press any key to close this window...
 pause > nul

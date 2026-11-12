@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import ReceiptModal from '../components/ReceiptModal';
-import { openReceiptLetterhead, downloadReceiptLetterheadFile } from '../utils/receiptGenerator';
-import API_BASE from '../config/api';
+import { TEMPLE_INFO, BANK_DETAILS } from '../config/templeConfig';
 
 function Donation() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     donorName: '',
     email: '',
@@ -15,11 +15,7 @@ function Donation() {
     purpose: 'General Donation',
     paymentMethod: 'UPI Payment'
   });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
-  const [receiptData, setReceiptData] = useState(null);
-  const [showReceiptModal, setShowReceiptModal] = useState(false);
 
   const presetAmounts = ['501', '1001', '2501', '5001', '10001'];
 
@@ -45,34 +41,9 @@ function Donation() {
     return emailRegex.test(email);
   };
 
-  const generateReceipt = (donationData) => {
-    const receiptNumber = `DON-${Date.now()}`;
-    const currentDate = new Date().toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-
-    return {
-      receiptNumber,
-      date: currentDate,
-      donorName: donationData.donorName,
-      email: donationData.email,
-      phone: donationData.phone,
-      address: donationData.address,
-      amount: donationData.amount,
-      purpose: donationData.purpose,
-      paymentMethod: donationData.paymentMethod,
-      templeName: 'Kolar Sringeri SriShankara Mutt',
-      templeAddress: 'Kote, Kolar, Karnataka - 563101',
-      templePhone: '+91 83101 51359',
-      templeEmail: 'info@kolarshankaramutt.org'
-    };
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!formData.donorName.trim()) {
       setError('Please enter your full name');
       return;
@@ -88,50 +59,15 @@ function Donation() {
       return;
     }
 
-    setLoading(true);
-    setError('');
-    setSuccess(false);
-
-    try {
-      const donationData = {
-        ...formData,
-        date: new Date().toISOString().split('T')[0],
-        amount: parseFloat(formData.amount)
-      };
-
-      const response = await fetch(`${API_BASE}/donations`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(donationData),
-      });
-
-      if (response.ok) {
-        const savedDonation = await response.json();
-        const receipt = generateReceipt(savedDonation);
-        setReceiptData(receipt);
-        setSuccess(true);
-        setShowReceiptModal(true);
-        
-        // Reset form
-        setFormData({
-          donorName: '',
-          email: '',
-          phone: '',
-          address: '',
-          amount: '',
-          purpose: 'General Donation',
-          paymentMethod: 'UPI Payment'
-        });
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to process donation. Please try again.');
-      }
-    } catch (err) {
-      console.error('Error processing donation:', err);
-      setError('Network connection error. Please verify and try again.');
-    } finally {
-      setLoading(false);
-    }
+    // Redirect to payment page with form data as route state
+    navigate('/payment', {
+      state: {
+        formData: {
+          ...formData,
+          amount: parseFloat(formData.amount),
+        },
+      },
+    });
   };
 
   return (
@@ -185,42 +121,6 @@ function Donation() {
                 <h2 className="card-title">Devotee Contribution Form</h2>
               </header>
               <div className="card-content">
-                {success && (
-                  <div className="message success" role="alert" aria-live="polite">
-                    <div>
-                      <p style={{ margin: 0, fontWeight: 700, fontSize: '1rem', color: '#1B5E20' }}>
-                        Seva offering recorded successfully!
-                      </p>
-                      <p style={{ margin: '4px 0 10px 0', fontSize: '0.85rem' }}>
-                        Official Receipt Number: <strong>{receiptData?.receiptNumber}</strong>
-                      </p>
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                        <button 
-                          type="button"
-                          onClick={() => setShowReceiptModal(true)} 
-                          className="btn btn-sm btn-primary"
-                        >
-                          View Letterhead Receipt
-                        </button>
-                        <button 
-                          type="button"
-                          onClick={() => receiptData && openReceiptLetterhead(receiptData)} 
-                          className="btn btn-sm btn-secondary"
-                        >
-                          Print / Save PDF
-                        </button>
-                        <button 
-                          type="button"
-                          onClick={() => receiptData && downloadReceiptLetterheadFile(receiptData)} 
-                          className="btn btn-sm btn-outline"
-                        >
-                          Download File
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 {error && (
                   <div className="message error" role="alert" aria-live="assertive">
                     <span>{error}</span>
@@ -244,7 +144,7 @@ function Donation() {
                         className="form-input"
                         placeholder="e.g. Suresh Kumar"
                         required
-                        disabled={loading}
+
                       />
                     </div>
 
@@ -262,7 +162,7 @@ function Donation() {
                           className="form-input"
                           placeholder="suresh@example.com"
                           required
-                          disabled={loading}
+
                         />
                       </div>
 
@@ -278,7 +178,7 @@ function Donation() {
                           onChange={handleInputChange}
                           className="form-input"
                           placeholder="+91 9876543210"
-                          disabled={loading}
+
                         />
                       </div>
                     </div>
@@ -294,7 +194,7 @@ function Donation() {
                         onChange={handleInputChange}
                         className="form-textarea"
                         rows="2"
-                        disabled={loading}
+
                         placeholder="Residential address / Gothram / Nakshatram (optional)"
                       />
                     </div>
@@ -333,7 +233,7 @@ function Donation() {
                         className="form-input"
                         required
                         min="1"
-                        disabled={loading}
+
                         placeholder="Enter custom amount in rupees"
                       />
                     </div>
@@ -349,7 +249,7 @@ function Donation() {
                           value={formData.purpose}
                           onChange={handleInputChange}
                           className="form-select"
-                          disabled={loading}
+
                         >
                           <option value="General Donation">General Donation / ಸಾಮಾನ್ಯ ಕಾಣಿಕೆ</option>
                           <option value="Annadanam Seva">Annadanam Seva / ಅನ್ನದಾನ ಸೇವೆ</option>
@@ -370,7 +270,7 @@ function Donation() {
                           value={formData.paymentMethod}
                           onChange={handleInputChange}
                           className="form-select"
-                          disabled={loading}
+
                         >
                           <option value="UPI Payment">UPI (GPay / PhonePe / Paytm)</option>
                           <option value="Online Transfer">Net Banking / NEFT / IMPS</option>
@@ -385,9 +285,8 @@ function Donation() {
                       <button 
                         type="submit" 
                         className="btn btn-primary btn-lg"
-                        disabled={loading}
                       >
-                        {loading ? 'Processing Offering...' : 'Submit Seva Contribution'}
+                        Proceed to Payment →
                       </button>
                     </div>
                   </fieldset>
@@ -413,11 +312,11 @@ function Donation() {
                 <h3 className="card-title">Bank Account Details</h3>
               </header>
               <div className="card-content" style={{ fontSize: '0.9rem', lineHeight: '1.8' }}>
-                <p><strong>Account:</strong> Kolar Sringeri SriShankara Mutt</p>
-                <p><strong>A/C No:</strong> 1234567890</p>
-                <p><strong>IFSC:</strong> SBIN0001234</p>
-                <p><strong>Bank:</strong> State Bank of India</p>
-                <p><strong>Branch:</strong> Kolar Main Branch</p>
+                <p><strong>Account:</strong> {BANK_DETAILS.accountName}</p>
+                <p><strong>A/C No:</strong> {BANK_DETAILS.accountNumber}</p>
+                <p><strong>IFSC:</strong> {BANK_DETAILS.ifsc}</p>
+                <p><strong>Bank:</strong> {BANK_DETAILS.bankName}</p>
+                <p><strong>Branch:</strong> {BANK_DETAILS.branch}</p>
               </div>
             </article>
 
@@ -427,8 +326,8 @@ function Donation() {
                 <h3 className="card-title">UPI Details</h3>
               </header>
               <div className="card-content" style={{ fontSize: '0.9rem', lineHeight: '1.8' }}>
-                <p><strong>UPI ID:</strong> kolarshankaramutt@sbi</p>
-                <p><strong>Accepted Apps:</strong> GPay, PhonePe, Paytm, BHIM</p>
+                <p><strong>Account Name:</strong> {BANK_DETAILS.accountName}</p>
+                <p><strong>Accepted Apps:</strong> {BANK_DETAILS.acceptedModes}</p>
                 <p><strong>Instant Confirmation:</strong> Attach transfer UTR reference in the form above.</p>
               </div>
             </article>
@@ -439,10 +338,10 @@ function Donation() {
                 <h3 className="card-title">Seva Assistance</h3>
               </header>
               <div className="card-content" style={{ fontSize: '0.9rem', lineHeight: '1.8' }}>
-                <p><strong>Phone:</strong> +91 83101 51359</p>
-                <p><strong>WhatsApp:</strong> +91 83101 51359</p>
-                <p><strong>Email:</strong> donations@kolarshankaramutt.org</p>
-                <p><strong>Office Hours:</strong> 9:00 AM &ndash; 6:00 PM</p>
+                <p><strong>Phone:</strong> {TEMPLE_INFO.phone}</p>
+                <p><strong>WhatsApp:</strong> {TEMPLE_INFO.whatsapp}</p>
+                <p><strong>Email:</strong> {TEMPLE_INFO.donationEmail}</p>
+                <p><strong>Office Hours:</strong> {TEMPLE_INFO.officeHours}</p>
               </div>
             </article>
           </div>
@@ -450,14 +349,6 @@ function Donation() {
       </main>
 
       <Footer />
-
-      {/* Official Banner Letterhead Receipt Modal */}
-      {showReceiptModal && receiptData && (
-        <ReceiptModal 
-          donation={receiptData} 
-          onClose={() => setShowReceiptModal(false)} 
-        />
-      )}
     </div>
   );
 }

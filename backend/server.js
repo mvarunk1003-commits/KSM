@@ -2,7 +2,7 @@
  * =============================================================================
  * Kolar Sringeri SriShankara Mutt — Backend API Engine
  * Powered by PostgreSQL with AWS Private PEM Key & EC2 / RDS Support
- * Region: ap-south-1 (Mumbai) | AWS Account: 2777-3120-8394
+ * Region: ap-south-1 (Mumbai)
  * =============================================================================
  */
 
@@ -16,6 +16,7 @@ require('dotenv').config();
 
 const db = require('./config/db');
 const dbService = require('./services/db-service');
+const notificationService = require('./services/notification-service');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -83,7 +84,7 @@ app.get('/api/health', async (req, res) => {
     timestamp: new Date().toISOString(),
     service: 'ksm-temple-backend',
     region: process.env.AWS_REGION || 'ap-south-1',
-    awsAccountId: '2777-3120-8394',
+    awsAccountId: process.env.AWS_ACCOUNT_ID || undefined,
     database: {
       connected: dbHealth.success,
       type: 'PostgreSQL',
@@ -410,6 +411,34 @@ app.delete('/api/contact/:id', async (req, res) => {
 // =============================================================================
 // DONATIONS ROUTES
 // =============================================================================
+// NOTIFICATIONS ROUTES (For Admin Dashboard & Mobile App)
+// =============================================================================
+app.get('/api/notifications', (req, res) => {
+  try {
+    const notifications = notificationService.getStoredNotifications();
+    res.json(notifications);
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to fetch notifications' });
+  }
+});
+
+app.post('/api/notifications/:id/read', (req, res) => {
+  try {
+    const list = notificationService.getStoredNotifications();
+    const idx = list.findIndex(n => n.id === req.params.id);
+    if (idx !== -1) {
+      list[idx].read = true;
+      notificationService.saveStoredNotifications(list);
+    }
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to mark notification as read' });
+  }
+});
+
+// =============================================================================
+// DONATIONS ROUTES
+// =============================================================================
 app.get('/api/donations', async (req, res) => {
   try {
     const donations = await dbService.getDonations();
@@ -419,12 +448,302 @@ app.get('/api/donations', async (req, res) => {
   }
 });
 
+// Get Pending Donations (for Admin Mobile App & Approvals view)
+app.get('/api/donations/pending', async (req, res) => {
+  try {
+    const donations = await dbService.getDonations();
+    const pending = donations.filter(d => (d.status || '').toLowerCase() === 'pending');
+    res.json(pending);
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to fetch pending donations' });
+  }
+});
+
+// Validate Cash Receipt Number uniqueness
+app.get('/api/donations/check-cash-receipt', async (req, res) => {
+  try {
+    const { receiptNumber, excludeId } = req.query;
+    if (!receiptNumber || !receiptNumber.trim()) {
+      return res.json({ isUnique: true });
+    }
+    const isUnique = await dbService.isCashReceiptUnique(receiptNumber, excludeId);
+    res.json({ isUnique });
+  } catch (e) {
+    res.status(500).json({ error: 'Error checking receipt uniqueness' });
+  }
+});
+
+// Validate UPI Transaction ID uniqueness
+app.get('/api/donations/check-transaction-id', async (req, res) => {
+  try {
+    const { transactionId, excludeId } = req.query;
+    if (!transactionId || !transactionId.trim()) {
+      return res.json({ isUnique: true });
+    }
+    const isUnique = await dbService.isTransactionIdUnique(transactionId, excludeId);
+    res.json({ isUnique });
+  } catch (e) {
+    res.status(500).json({ error: 'Error checking transaction uniqueness' });
+  }
+});
+
 app.post('/api/donations', async (req, res) => {
   try {
-    const created = await dbService.createDonation(req.body);
+    const {
+      donorName,
+      amount,
+      paymentMethod,
+      cashReceiptNumber,
+      paymentDate,
+      amountReceived,
+      receivedBy,
+      transactionId
+    } = req.body;
+
+    // Validate common required fields
+    if (!donorName || !donorName.trim()) {
+      return res.status(400).json({ error: 'Devotee / Donor name is required' });
+    }
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return res.status(400).json({ error: 'A valid donation amount is required' });
+    }
+
+    const selectedMethod = paymentMethod || 'UPI Payment';
+
+    // Separate Workflow Validation for Cash Payment
+    if (selectedMethod === 'Cash Payment') {
+      if (!cashReceiptNumber || !cashReceiptNumber.toString().trim()) {
+        return res.status(400).json({ error: 'Cash Receipt Number is mandatory for Cash Payments' });
+      }
+      const isUnique = await dbService.isCashReceiptUnique(cashReceiptNumber);
+      if (!isUnique) {
+        return res.status(400).json({ error: `Cash Receipt Number "${cashReceiptNumber}" has already been used. Cash receipt number must be unique.` });
+      }
+      if (!paymentDate || !paymentDate.toString().trim()) {
+        return res.status(400).json({ error: 'Payment Date is mandatory for Cash Payments' });
+      }
+      const parsedReceived = parseFloat(amountReceived);
+      if (isNaN(parsedReceived) || parsedReceived <= 0) {
+        return res.status(400).json({ error: 'Valid Amount Received is mandatory for Cash Payments' });
+      }
+      if (!receivedBy || !receivedBy.toString().trim()) {
+        return res.status(400).json({ error: 'Received By (Staff / Authority Name) is mandatory for Cash Payments' });
+      }
+    }
+
+    // Separate Workflow Validation for UPI Payment
+    if (selectedMethod === 'UPI Payment' && transactionId && transactionId.toString().trim()) {
+      const isTxnUnique = await dbService.isTransactionIdUnique(transactionId);
+      if (!isTxnUnique) {
+        return res.status(400).json({ error: `UPI Transaction ID / UTR "${transactionId}" has already been submitted for another donation.` });
+      }
+    }
+
+    // Default to 'pending' verification for all incoming devotee offerings
+    const donationData = {
+      ...req.body,
+      amount: parsedAmount,
+      amountReceived: amountReceived !== undefined ? parseFloat(amountReceived) : parsedAmount,
+      paymentMethod: selectedMethod,
+      status: req.body.status || 'pending',
+    };
+    const created = await dbService.createDonation(donationData);
+
+    // Notify Admin via Email and Mobile App Queue (host dynamically determined from incoming request)
+    try {
+      await notificationService.notifyAdminNewDonation(created, req.get('host'));
+    } catch (notifErr) {
+      console.warn('Admin notification dispatch error:', notifErr.message);
+    }
+
     res.json(created);
   } catch (e) {
+    console.error('Error creating donation:', e);
     res.status(500).json({ error: 'Failed to record donation' });
+  }
+});
+
+// Approve Donation (For Admin Login & Admin Mobile App)
+app.post('/api/donations/:id/approve', async (req, res) => {
+  try {
+    const donationId = req.params.id;
+    const year = new Date().getFullYear();
+    const officialReceiptNumber = `KSM/SEVA/${year}/${String(donationId).slice(-5)}`;
+    
+    const updated = await dbService.updateDonation(donationId, {
+      status: 'received', // 'received' is marked as Approved in the system
+      receiptNumber: officialReceiptNumber,
+      approvedAt: new Date().toISOString(),
+      approvedBy: req.body.approvedBy || 'Admin'
+    });
+
+    if (!updated) {
+      return res.status(404).json({ error: 'Donation not found' });
+    }
+
+    // Update status in notifications list
+    const notifs = notificationService.getStoredNotifications();
+    const targetNotif = notifs.find(n => String(n.donationId) === String(donationId));
+    if (targetNotif) {
+      targetNotif.approvalStatus = 'approved';
+      targetNotif.read = true;
+      notificationService.saveStoredNotifications(notifs);
+    }
+
+    res.json({
+      success: true,
+      message: 'Donation verified and approved. Official receipt generated.',
+      donation: updated,
+      receiptNumber: officialReceiptNumber
+    });
+  } catch (e) {
+    console.error('Error approving donation:', e);
+    res.status(500).json({ error: 'Failed to approve donation' });
+  }
+});
+
+// Direct One-Click Email Approval from Admin Mail
+app.get('/api/donations/email-approve', async (req, res) => {
+  try {
+    const { id, token } = req.query;
+    if (!id || !token) {
+      return res.status(400).send(`
+        <div style="font-family:sans-serif; text-align:center; padding:50px;">
+          <h2 style="color:#B91C1C;">Invalid Approval Request</h2>
+          <p>Missing donation ID or approval token.</p>
+        </div>
+      `);
+    }
+
+    const isValid = notificationService.verifyApprovalToken(id, token);
+    if (!isValid) {
+      return res.status(403).send(`
+        <div style="font-family:sans-serif; text-align:center; padding:50px;">
+          <h2 style="color:#B91C1C;">Unauthorized Approval Request</h2>
+          <p>Invalid or expired approval token.</p>
+        </div>
+      `);
+    }
+
+    const year = new Date().getFullYear();
+    const officialReceiptNumber = `KSM/SEVA/${year}/${String(id).slice(-5)}`;
+
+    const updated = await dbService.updateDonation(id, {
+      status: 'received',
+      receiptNumber: officialReceiptNumber,
+      approvedAt: new Date().toISOString(),
+      approvedBy: 'Admin (Email One-Click Verification)'
+    });
+
+    if (!updated) {
+      return res.status(404).send(`
+        <div style="font-family:sans-serif; text-align:center; padding:50px;">
+          <h2 style="color:#B91C1C;">Donation Not Found</h2>
+          <p>The record may have been deleted or previously updated.</p>
+        </div>
+      `);
+    }
+
+    // Update notification status
+    const notifs = notificationService.getStoredNotifications();
+    const targetNotif = notifs.find(n => String(n.donationId) === String(id));
+    if (targetNotif) {
+      targetNotif.approvalStatus = 'approved';
+      targetNotif.read = true;
+      notificationService.saveStoredNotifications(notifs);
+    }
+
+    // Return official confirmation and printable letterhead receipt view
+    const dateFormatted = new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+    const amountFormatted = parseFloat(updated.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+    res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <title>Official Approval &amp; Receipt - ${officialReceiptNumber}</title>
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #F8F4EE; color: #2A180D; padding: 30px; display: flex; justify-content: center; }
+        .card { max-width: 650px; width: 100%; background: #ffffff; border: 2px solid #D4AF37; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: #8B1E0F; color: #fff; padding: 24px; text-align: center; border-bottom: 3px solid #D4AF37; }
+        .header h1 { margin: 0 0 6px 0; font-size: 1.3rem; color: #FEE7A6; }
+        .success-banner { background: #DCFCE7; color: #166534; padding: 14px 20px; border-bottom: 1px solid #BBF7D0; font-weight: bold; text-align: center; font-size: 1rem; }
+        .content { padding: 28px; line-height: 1.8; }
+        .receipt-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .receipt-table td { padding: 10px 14px; border: 1px solid #EBDDC1; font-size: 0.95rem; }
+        .receipt-table td.label { background: #FDF9F2; font-weight: 600; color: #555; width: 35%; }
+        .actions { display: flex; gap: 12px; justify-content: center; margin-top: 24px; }
+        .btn { padding: 10px 22px; border-radius: 6px; font-weight: bold; font-size: 0.95rem; cursor: pointer; text-decoration: none; border: none; }
+        .btn-print { background: #D4AF37; color: #2A180D; }
+        .btn-admin { background: #8B1E0F; color: #fff; }
+        @media print {
+          body { background: #fff; padding: 0; }
+          .card { border: none; box-shadow: none; max-width: 100%; }
+          .actions { display: none; }
+          .success-banner { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <div class="header">
+          <h1>॥ ಕೋಲಾರ ಶೃಂಗೇರಿ ಶ್ರೀಶಂಕರ ಮಠ ॥</h1>
+          <div>Kolar Sringeri SriShankara Mutt &bull; Official Verification Portal</div>
+        </div>
+        <div class="success-banner">
+          ✅ Seva Offering Successfully Verified &amp; Approved! Official Receipt Generated.
+        </div>
+        <div class="content">
+          <p style="margin-top: 0;">This offering has been officially authenticated. The receipt is now permanently recorded and ready for the devotee.</p>
+          <table class="receipt-table">
+            <tr>
+              <td class="label">Official Receipt No:</td>
+              <td><strong style="color: #8B1E0F; font-size: 1.1rem;">${officialReceiptNumber}</strong></td>
+            </tr>
+            <tr>
+              <td class="label">Devotee Name:</td>
+              <td><strong>${updated.donorName || 'Devotee'}</strong></td>
+            </tr>
+            <tr>
+              <td class="label">Contribution Amount:</td>
+              <td><strong style="color: #166534; font-size: 1.15rem;">₹${amountFormatted}</strong></td>
+            </tr>
+            <tr>
+              <td class="label">Seva Purpose:</td>
+              <td>${updated.purpose || 'General Seva'}</td>
+            </tr>
+            <tr>
+              <td class="label">Payment Mode:</td>
+              <td>${updated.paymentMethod || 'UPI Payment'}</td>
+            </tr>
+            <tr>
+              <td class="label">Transaction Reference:</td>
+              <td><code>${updated.transactionId || 'N/A'}</code></td>
+            </tr>
+            <tr>
+              <td class="label">Approval Date &amp; Time:</td>
+              <td>${dateFormatted} &bull; ${new Date().toLocaleTimeString('en-IN')}</td>
+            </tr>
+            <tr>
+              <td class="label">Authentication:</td>
+              <td><span style="color: #166534; font-weight: bold;">✓ Verified by Admin</span></td>
+            </tr>
+          </table>
+
+          <div class="actions">
+            <button class="btn btn-print" onclick="window.print()">🖨️ Print / Save Official Receipt</button>
+            <a href="/admin" class="btn btn-admin">Open Admin Dashboard</a>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+    `);
+  } catch (e) {
+    console.error('Error in email-approve:', e);
+    res.status(500).send('Server error processing approval.');
   }
 });
 

@@ -1,8 +1,6 @@
 // =============================================================================
 // Jenkins Declarative Pipeline for Kolar Sringeri SriShankara Mutt
 // Cloud Infrastructure: AWS Asia Pacific (ap-south-1, Mumbai)
-// AWS Account ID: 2777-3120-8394
-// AWS Console: https://ap-south-1.console.aws.amazon.com/ec2/home?region=ap-south-1#Home:
 // Deployment Method: Docker + PostgreSQL + pgAdmin via Private PEM Key SSH
 // =============================================================================
 
@@ -16,10 +14,10 @@ pipeline {
     }
 
     environment {
-        // AWS Settings
-        AWS_ACCOUNT_ID      = '277731208394'
-        AWS_REGION          = 'ap-south-1'
-        AWS_CREDENTIALS_ID  = 'aws-credentials-277731208394'
+        // AWS Settings (Configured via Jenkins Credentials & Environment)
+        AWS_ACCOUNT_ID      = "${env.AWS_ACCOUNT_ID ?: ''}"
+        AWS_REGION          = "${env.AWS_REGION ?: 'ap-south-1'}"
+        AWS_CREDENTIALS_ID  = "${env.AWS_CREDENTIALS_ID ?: 'aws-credentials'}"
         
         // ECR Repository URL
         ECR_REGISTRY        = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
@@ -27,7 +25,7 @@ pipeline {
         IMAGE_TAG           = "${BUILD_NUMBER}"
         
         // EC2 Server Deployment (Configured in Jenkins Global Environment or Parameters)
-        EC2_HOST            = "${params.EC2_PUBLIC_IP ?: env.EC2_HOST ?: '15.206.128.103'}"
+        EC2_HOST            = "${params.EC2_PUBLIC_IP ?: env.EC2_HOST ?: ''}"
         EC2_USER            = "${params.EC2_SSH_USER ?: 'ec2-user'}"
         SSH_PEM_KEY_ID      = 'ec2-private-pem-key' // Jenkins SSH Private Key Credential ID
         

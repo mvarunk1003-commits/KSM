@@ -2,7 +2,6 @@
 # Kolar Sringeri SriShankara Mutt — Multi-Container Docker Stack
 # Backend API + PostgreSQL 16 + pgAdmin 4
 # Target Host: AWS EC2 Asia Pacific (ap-south-1 Mumbai)
-# AWS Account ID: 2777-3120-8394
 # =============================================================================
 
 version: '3.8'
@@ -26,10 +25,10 @@ services:
       - DB_PORT=5432
       - DB_NAME=ksm_temple_db
       - DB_USER=postgres
-      - DB_PASSWORD=ksm_secure_password_2024
-      - DB_SSL=false
-      - AWS_REGION=ap-south-1
-      - AWS_ACCOUNT_ID=2777-3120-8394
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_SSL=${DB_SSL:-false}
+      - AWS_REGION=${AWS_REGION:-ap-south-1}
+      - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID:-}
     volumes:
       - ./backend/data:/app/data
       - ./frontend/public/assets:/app/public/assets
@@ -51,7 +50,7 @@ services:
     environment:
       - POSTGRES_DB=ksm_temple_db
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=ksm_secure_password_2024
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -74,8 +73,8 @@ services:
     ports:
       - "5050:80"
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@kolarshankaramutt.org
-      - PGADMIN_DEFAULT_PASSWORD=KolarMutt2024!
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD:-AdminPassword123!}
       - PGADMIN_CONFIG_SERVER_MODE=False
     volumes:
       - pgadmin_data:/var/lib/pgadmin

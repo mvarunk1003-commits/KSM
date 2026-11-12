@@ -1,23 +1,42 @@
 # Dependencies
 node_modules/
+*/node_modules/
 
-# Secrets and Private Keys
+# Secrets, Environment and Private Keys
 *.pem
 *.key
 *.ppk
+*.crt
+*.pfx
 keys/
 .env
-.env.local
-.env.production
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
 
 # Build outputs
 build/
 dist/
+out/
+.next/
 
 # Logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# System
+# Database data / Local runtime stores
+pgadmin_data/
+postgres_data/
+
+# System & IDE
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/

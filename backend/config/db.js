@@ -196,6 +196,29 @@ async function query(text, params) {
 }
 
 /**
+ * Ensure database schema contains required columns for UPI and Cash payments
+ */
+async function ensureSchema() {
+  try {
+    await query(`
+      ALTER TABLE donations ADD COLUMN IF NOT EXISTS transaction_id VARCHAR(100);
+      ALTER TABLE donations ADD COLUMN IF NOT EXISTS cash_receipt_number VARCHAR(100);
+      ALTER TABLE donations ADD COLUMN IF NOT EXISTS payment_date VARCHAR(50);
+      ALTER TABLE donations ADD COLUMN IF NOT EXISTS amount_received NUMERIC(12, 2);
+      ALTER TABLE donations ADD COLUMN IF NOT EXISTS received_by VARCHAR(255);
+      ALTER TABLE donations ADD COLUMN IF NOT EXISTS remarks TEXT;
+      ALTER TABLE donations ADD COLUMN IF NOT EXISTS approved_by VARCHAR(255);
+      ALTER TABLE donations ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP WITH TIME ZONE;
+      CREATE INDEX IF NOT EXISTS idx_donations_cash_receipt ON donations(cash_receipt_number);
+      CREATE INDEX IF NOT EXISTS idx_donations_transaction_id ON donations(transaction_id);
+    `);
+    console.log('✅ PostgreSQL Schema migrations for UPI and Cash payments verified.');
+  } catch (err) {
+    console.warn('⚠️ PostgreSQL ensureSchema notice:', err.message);
+  }
+}
+
+/**
  * Check connection health
  */
 async function testConnection() {
@@ -203,6 +226,7 @@ async function testConnection() {
     const res = await query('SELECT NOW() AS current_time, current_database() AS db_name, version() AS version');
     isConnected = true;
     console.log(`✅ Connected to PostgreSQL Database: "${res.rows[0].db_name}" at ${res.rows[0].current_time}`);
+    await ensureSchema();
     return { success: true, info: res.rows[0] };
   } catch (err) {
     isConnected = false;

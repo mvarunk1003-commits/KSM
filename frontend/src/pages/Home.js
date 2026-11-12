@@ -22,7 +22,7 @@ function Home() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const [activitiesRes, announcementsRes, bannerRes] = await Promise.all([
         fetch(`${API_BASE}/activities`),
         fetch(`${API_BASE}/announcements`),
@@ -87,9 +87,9 @@ function Home() {
   }, [fetchData]);
 
   const renderCard = (item, type) => (
-    <article 
-      key={item.id} 
-      className="card card-sacred" 
+    <article
+      key={item.id}
+      className="card card-sacred"
       onClick={() => handleItemClick(item, type)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleItemClick(item, type); } }}
       tabIndex="0"
@@ -99,9 +99,9 @@ function Home() {
       {item.images && item.images.length > 0 && (
         <div className="card-images-top" aria-hidden="true">
           {item.images.slice(0, 3).map((img, idx) => (
-            <img 
-              key={idx} 
-              src={getImageUrl(img)} 
+            <img
+              key={idx}
+              src={getImageUrl(img)}
               alt={`${type} media ${idx + 1}`}
               className="card-image-main"
               loading="lazy"
@@ -140,9 +140,9 @@ function Home() {
   return (
     <div className="page-wrapper">
       <Header />
-      
+
       <main id="main-content" className="container" role="main">
-        
+
         {/* Sacred Darshan & Live Timings Bar */}
         <section aria-label="Darshan & Pooja Timings" className="darshan-ticker-card">
           <div className="darshan-ticker-inner">
@@ -153,19 +153,16 @@ function Home() {
             <div className="darshan-timings-grid">
               <div className="darshan-timing-col">
                 <span className="darshan-label">Morning Darshan:</span>
-                <span className="darshan-val">6:00 AM – 1:00 PM</span>
+                <span className="darshan-val">08:00 AM – 11:00 PM</span>
               </div>
               <div className="darshan-timing-col">
                 <span className="darshan-label">Mahamangalarthi:</span>
-                <span className="darshan-val">12:30 PM &amp; 8:00 PM</span>
+                <span className="darshan-val">10:30 PM &amp; 8:00 PM</span>
               </div>
               <div className="darshan-timing-col">
                 <span className="darshan-label">Evening Darshan:</span>
-                <span className="darshan-val">5:00 PM – 8:30 PM</span>
+                <span className="darshan-val">06:00 PM – 8:30 PM</span>
               </div>
-            </div>
-            <div className="darshan-shloka">
-              ॥ ಸರಸ್ವತಿ ನಮಸ್ತುಭ್ಯಂ ವರದೇ ಕಾಮರೂಪಿಣಿ । ವಿದ್ಯಾರಂಭಂ ಕರಿಷ್ಯಾಮಿ ಸಿದ್ಧಿರ್ಭವತು ಮೇ ಸದಾ ॥
             </div>
           </div>
         </section>
@@ -177,8 +174,8 @@ function Home() {
 
         {/* Quick Sacred Action Links */}
         <section aria-label="Quick Action Services" className="quick-actions-bar">
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="quick-action-btn primary"
             onClick={() => navigate('/donation')}
           >
@@ -189,8 +186,8 @@ function Home() {
             <span className="btn-arrow" aria-hidden="true">&rarr;</span>
           </button>
 
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="quick-action-btn"
             onClick={() => navigate('/activities')}
           >
@@ -201,8 +198,8 @@ function Home() {
             <span className="btn-arrow" aria-hidden="true">&rarr;</span>
           </button>
 
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="quick-action-btn"
             onClick={() => navigate('/announcements')}
           >
@@ -213,8 +210,8 @@ function Home() {
             <span className="btn-arrow" aria-hidden="true">&rarr;</span>
           </button>
 
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="quick-action-btn"
             onClick={() => navigate('/contact')}
           >
@@ -267,10 +264,40 @@ function Home() {
               <div className="heritage-card">
                 <div className="heritage-content">
                   <p className="heritage-text">
-                    Established under the divine benediction and authority of the sacred Jagadguru Shankaracharya Mahasamsthanam Dakshinamnaya Sri Sharada Peetham, Sringeri, the <strong>Kolar Sringeri SriShankara Mutt</strong> stands as an illustrious bastion of Advaita Vedanta philosophy, Sanatana Dharma, and Vedic wisdom in the historic region of Kolar.
+                    Kolar Sringeri Sri Shankara Math was established in 1928 with the divine blessings of the revered lineage (parampara) of Adi Shankaracharya.
+
+                    In 1930, the sacred Shankaracharya Pratishthapana was performed, laying a strong spiritual foundation for the Math. Later, in 1965, Paramapujya Sri Abhinavodanda Vidyaranyabharathi Mahaswamiji of Avani Math conducted the Pratishtha Kumbhabhisheka of Sri Sharadamba, further sanctifying the premises.
+
+                    In 2019, the Math was formally brought under the guidance of the esteemed Sringeri Sharada Peetham, strengthening its connection with the main spiritual lineage.
+
+                    At present, Sri Ramakrishna J. N. serves as the Dharmadhikari (Branch Head) of the Kolar Srimath.
                   </p>
                   <p className="heritage-text">
-                    Through regular religious ceremonies, daily Chandramouleshwara and Sri Sharadamba Poojas, spiritual discourses, traditional rituals, community services, and Veda Pathashala initiatives, the mutt nurtures the spiritual and cultural well-being of devotees under the sacred guidance of the Jagadguru Sankaracharyas of Sringeri.
+                    Activities at the Srimath
+
+                    The Srimath is a vibrant center for Dharmika and cultural activities, dedicated to preserving and propagating Sanatana Dharma.
+
+                    Spiritual Discourses
+                    Regular talks by learned scholars on Dharma and Advaita Vedanta are conducted.
+
+                    Stotra Classes (Every Thursday)
+                    Focused on teaching the sacred hymns and the philosophy of Sri Shankara.
+
+                    Sanskrit Classes (Every Saturday & Sunday – Evening)
+                    Promoting the study and everyday usage of Sanskrit among all age groups.
+
+                    Vision
+
+                    Kolar Srimath continues to stand as a beacon of:
+
+                    Spiritual learning
+
+                    Sanskrit propagation
+
+                    Cultural revival
+
+                    It fosters devotion, awareness, and community engagement while upholding the timeless teachings of Advaita Vedanta.
+
                   </p>
                 </div>
               </div>
@@ -335,7 +362,7 @@ function Home() {
                   </button>
                 )}
               </div>
-              
+
               {activities.length > 0 ? (
                 <div className="grid grid-3">
                   {activities.slice(0, 3).map(activity => renderCard(activity, 'activity'))}
@@ -362,7 +389,7 @@ function Home() {
                   </button>
                 )}
               </div>
-              
+
               {announcements.length > 0 ? (
                 <div className="grid grid-3">
                   {announcements.slice(0, 3).map(announcement => renderCard(announcement, 'announcement'))}
@@ -379,17 +406,17 @@ function Home() {
 
       {/* Accessible Detail Modal */}
       {showModal && selectedItem && (
-        <div 
-          className="modal-overlay" 
-          onClick={closeModal} 
-          role="dialog" 
-          aria-modal="true" 
+        <div
+          className="modal-overlay"
+          onClick={closeModal}
+          role="dialog"
+          aria-modal="true"
           aria-labelledby="modal-item-title"
         >
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <button 
-              type="button" 
-              className="modal-close-btn" 
+            <button
+              type="button"
+              className="modal-close-btn"
               onClick={closeModal}
               aria-label="Close dialog"
             >
@@ -405,7 +432,7 @@ function Home() {
             </div>
             <div className="modal-content" style={{ marginTop: 'var(--spacing-md)' }}>
               <p style={{ fontSize: '1rem', lineHeight: '1.7' }}>{selectedItem.description}</p>
-              
+
               {selectedItem.images && selectedItem.images.length > 0 && (
                 <div className="modal-images" style={{ marginTop: 'var(--spacing-lg)' }}>
                   <h4 style={{ marginBottom: 'var(--spacing-sm)' }}>Attached Media &amp; Documents</h4>
@@ -413,8 +440,8 @@ function Home() {
                     const isPdf = isPdfFile(img);
                     if (isPdf) {
                       return (
-                        <div 
-                          key={idx} 
+                        <div
+                          key={idx}
                           className="modal-pdf-card"
                           onClick={() => setActiveMedia({ media: img, title: selectedItem.title })}
                           role="button"
@@ -428,8 +455,8 @@ function Home() {
                               <div className="modal-pdf-sub">PDF Document &bull; Click to view inside reader</div>
                             </div>
                           </div>
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="btn btn-sm btn-primary"
                             onClick={(e) => {
                               e.stopPropagation();
@@ -442,8 +469,8 @@ function Home() {
                       );
                     }
                     return (
-                      <div 
-                        key={idx} 
+                      <div
+                        key={idx}
                         className="modal-image-card"
                         onClick={() => setActiveMedia({ media: img, title: selectedItem.title })}
                         title="Click to view full image"
@@ -451,8 +478,8 @@ function Home() {
                         tabIndex="0"
                         style={{ cursor: 'pointer', marginBottom: 'var(--spacing-sm)' }}
                       >
-                        <img 
-                          src={getImageUrl(img)} 
+                        <img
+                          src={getImageUrl(img)}
                           alt={`${selectedItem.type} document ${idx + 1}`}
                           className="modal-image"
                           style={{ borderRadius: 'var(--radius-sm)', maxHeight: '250px', objectFit: 'contain' }}
@@ -475,10 +502,10 @@ function Home() {
 
       {/* Media Lightbox */}
       {activeMedia && (
-        <MediaModal 
-          media={activeMedia.media} 
-          title={activeMedia.title} 
-          onClose={() => setActiveMedia(null)} 
+        <MediaModal
+          media={activeMedia.media}
+          title={activeMedia.title}
+          onClose={() => setActiveMedia(null)}
         />
       )}
 

@@ -568,6 +568,14 @@ function mapDonationRow(row) {
     date: row.date,
     status: row.status,
     receiptNumber: row.receipt_number,
+    transactionId: row.transaction_id,
+    cashReceiptNumber: row.cash_receipt_number,
+    paymentDate: row.payment_date,
+    amountReceived: row.amount_received !== null && row.amount_received !== undefined ? parseFloat(row.amount_received) : undefined,
+    receivedBy: row.received_by,
+    remarks: row.remarks,
+    approvedBy: row.approved_by,
+    approvedAt: row.approved_at,
     createdAt: row.created_at
   };
 }
@@ -584,49 +592,136 @@ async function getDonations() {
   return await readJsonFile('donations.json', []);
 }
 
+async function isCashReceiptUnique(cashReceiptNumber, excludeId = null) {
+  if (!cashReceiptNumber || !cashReceiptNumber.trim()) return true;
+  const cleanReceipt = cashReceiptNumber.trim().toLowerCase();
+
+  if (db.isPgConnected()) {
+    try {
+      let queryText = 'SELECT id FROM donations WHERE LOWER(TRIM(cash_receipt_number)) = $1';
+      const params = [cleanReceipt];
+      if (excludeId) {
+        queryText += ' AND id != $2';
+        params.push(excludeId.toString());
+      }
+      const res = await db.query(queryText, params);
+      return res.rows.length === 0;
+    } catch (e) {
+      console.warn('Postgres isCashReceiptUnique check error:', e.message);
+    }
+  }
+
+  const items = await readJsonFile('donations.json', []);
+  const match = items.find(d => 
+    d.cashReceiptNumber && 
+    d.cashReceiptNumber.toString().trim().toLowerCase() === cleanReceipt &&
+    (!excludeId || d.id.toString() !== excludeId.toString())
+  );
+  return !match;
+}
+
+async function isTransactionIdUnique(transactionId, excludeId = null) {
+  if (!transactionId || !transactionId.trim()) return true;
+  const cleanTxn = transactionId.trim().toLowerCase();
+
+  if (db.isPgConnected()) {
+    try {
+      let queryText = 'SELECT id FROM donations WHERE LOWER(TRIM(transaction_id)) = $1';
+      const params = [cleanTxn];
+      if (excludeId) {
+        queryText += ' AND id != $2';
+        params.push(excludeId.toString());
+      }
+      const res = await db.query(queryText, params);
+      return res.rows.length === 0;
+    } catch (e) {
+      console.warn('Postgres isTransactionIdUnique check error:', e.message);
+    }
+  }
+
+  const items = await readJsonFile('donations.json', []);
+  const match = items.find(d => 
+    d.transactionId && 
+    d.transactionId.toString().trim().toLowerCase() === cleanTxn &&
+    (!excludeId || d.id.toString() !== excludeId.toString())
+  );
+  return !match;
+}
+
 async function createDonation(donation) {
   const id = donation.id ? donation.id.toString() : `${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-  const receiptNumber = donation.receiptNumber || `KSM-${Date.now().toString().slice(-7)}`;
+  const receiptNumber = donation.receiptNumber || null;
   const date = donation.date || new Date().toISOString().split('T')[0];
+  const paymentMethod = donation.paymentMethod || donation.payment_method || 'UPI Payment';
+  const amount = parseFloat(donation.amount) || 0;
+  const amountReceived = donation.amountReceived !== undefined ? parseFloat(donation.amountReceived) : amount;
+  const paymentDate = donation.paymentDate || date;
+  const cashReceiptNumber = donation.cashReceiptNumber ? donation.cashReceiptNumber.toString().trim() : null;
+  const transactionId = donation.transactionId ? donation.transactionId.toString().trim() : null;
+  const receivedBy = donation.receivedBy ? donation.receivedBy.toString().trim() : null;
+  const remarks = donation.remarks ? donation.remarks.toString().trim() : null;
+  const status = donation.status || 'pending';
 
   if (db.isPgConnected()) {
     try {
       const res = await db.query(
-        `INSERT INTO donations (id, donor_name, amount, purpose, payment_method, phone, email, address, date, status, receipt_number, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CURRENT_TIMESTAMP)
-         RETURNING *`,
+        `INSERT INTO donations (
+          id, donor_name, amount, purpose, payment_method, 
+          phone, email, address, date, status, receipt_number,
+          transaction_id, cash_receipt_number, payment_date, amount_received,
+          received_by, remarks, approved_by, approved_at, created_at
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, CURRENT_TIMESTAMP)
+        RETURNING *`,
         [
           id,
           donation.donorName || donation.donor_name || 'Anonymous Devotee',
-          parseFloat(donation.amount) || 0,
+          amount,
           donation.purpose || 'General Donation',
-          donation.paymentMethod || donation.payment_method || 'CASH',
+          paymentMethod,
           donation.phone || '',
           donation.email || '',
           donation.address || '',
           date,
-          donation.status || 'received',
-          receiptNumber
+          status,
+          receiptNumber,
+          transactionId,
+          cashReceiptNumber,
+          paymentDate,
+          amountReceived,
+          receivedBy,
+          remarks,
+          donation.approvedBy || null,
+          donation.approvedAt || null
         ]
       );
       return mapDonationRow(res.rows[0]);
     } catch (e) {
-      console.warn('Postgres createDonation error:', e.message);
+      console.warn('Postgres createDonation error, falling back to JSON:', e.message);
     }
   }
+
   const items = await readJsonFile('donations.json', []);
   const newItem = {
     id,
     donorName: donation.donorName || 'Anonymous Devotee',
-    amount: parseFloat(donation.amount) || 0,
+    amount,
     purpose: donation.purpose || 'General Donation',
-    paymentMethod: donation.paymentMethod || 'CASH',
+    paymentMethod,
     phone: donation.phone || '',
     email: donation.email || '',
     address: donation.address || '',
     date,
-    status: donation.status || 'received',
+    status,
     receiptNumber,
+    transactionId,
+    cashReceiptNumber,
+    paymentDate,
+    amountReceived,
+    receivedBy,
+    remarks,
+    approvedBy: donation.approvedBy || null,
+    approvedAt: donation.approvedAt || null,
     createdAt: new Date().toISOString()
   };
   items.push(newItem);
@@ -648,8 +743,16 @@ async function updateDonation(id, donation) {
              address = COALESCE($7, address),
              date = COALESCE($8, date),
              status = COALESCE($9, status),
-             receipt_number = COALESCE($10, receipt_number)
-         WHERE id = $11
+             receipt_number = COALESCE($10, receipt_number),
+             transaction_id = COALESCE($11, transaction_id),
+             cash_receipt_number = COALESCE($12, cash_receipt_number),
+             payment_date = COALESCE($13, payment_date),
+             amount_received = COALESCE($14, amount_received),
+             received_by = COALESCE($15, received_by),
+             remarks = COALESCE($16, remarks),
+             approved_by = COALESCE($17, approved_by),
+             approved_at = COALESCE($18, approved_at)
+         WHERE id = $19
          RETURNING *`,
         [
           donation.donorName,
@@ -662,6 +765,14 @@ async function updateDonation(id, donation) {
           donation.date,
           donation.status,
           donation.receiptNumber,
+          donation.transactionId,
+          donation.cashReceiptNumber,
+          donation.paymentDate,
+          donation.amountReceived !== undefined ? parseFloat(donation.amountReceived) : undefined,
+          donation.receivedBy,
+          donation.remarks,
+          donation.approvedBy,
+          donation.approvedAt,
           id.toString()
         ]
       );
@@ -1049,6 +1160,8 @@ module.exports = {
   createDonation,
   updateDonation,
   deleteDonation,
+  isCashReceiptUnique,
+  isTransactionIdUnique,
   // Expenses
   getExpenses,
   createExpense,

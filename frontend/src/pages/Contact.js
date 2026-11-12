@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import API_BASE from '../config/api';
+import { useLanguage } from '../context/LanguageContext';
 
 function Contact() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -54,8 +56,8 @@ function Contact() {
         <section className="section" aria-labelledby="contact-heading">
           <div className="section-header">
             <div>
-              <h1 id="contact-heading" className="section-title">Contact &amp; Visit Us</h1>
-              <p className="section-subtitle">Reach out to the mutt administration for inquiries, pooja bookings, and seva guidance</p>
+              <h1 id="contact-heading" className="section-title">{t('contactTitle') || 'Contact Us'}</h1>
+              <p className="section-subtitle">{t('contactDescription') || 'Reach out to the mutt administration for inquiries, pooja bookings, and seva guidance'}</p>
             </div>
           </div>
 

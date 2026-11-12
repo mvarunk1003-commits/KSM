@@ -4,8 +4,10 @@ import Footer from '../components/Footer';
 import MediaModal from '../components/MediaModal';
 import { getImageUrl, isPdfFile, openMediaInNewTab } from '../utils/imageUtils';
 import API_BASE from '../config/api';
+import { useLanguage } from '../context/LanguageContext';
 
 function Activities() {
+  const { currentLanguage, t } = useLanguage();
   const [activities, setActivities] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
@@ -163,8 +165,8 @@ function Activities() {
         <section className="section" aria-labelledby="page-title">
           <div className="section-header">
             <div>
-              <h1 id="page-title" className="section-title">Activities &amp; Events</h1>
-              <p className="section-subtitle">Explore upcoming and past spiritual, religious, and cultural activities</p>
+              <h1 id="page-title" className="section-title">{t('activitiesTitle')}</h1>
+              <p className="section-subtitle">{t('activitiesSub')}</p>
             </div>
             
             {/* Search Input Filter */}

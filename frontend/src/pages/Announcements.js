@@ -4,8 +4,10 @@ import Footer from '../components/Footer';
 import MediaModal from '../components/MediaModal';
 import { getImageUrl, isPdfFile, openMediaInNewTab } from '../utils/imageUtils';
 import API_BASE from '../config/api';
+import { useLanguage } from '../context/LanguageContext';
 
 function Announcements() {
+  const { currentLanguage, t } = useLanguage();
   const [announcements, setAnnouncements] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
@@ -166,8 +168,8 @@ function Announcements() {
         <section className="section" aria-labelledby="announcements-title">
           <div className="section-header">
             <div>
-              <h1 id="announcements-title" className="section-title">Official Announcements</h1>
-              <p className="section-subtitle">Official notifications, pooja schedule changes, and temple notices</p>
+              <h1 id="announcements-title" className="section-title">{t('announcementsTitle')}</h1>
+              <p className="section-subtitle">{t('announcementsSub')}</p>
             </div>
 
             {/* Search Input Filter */}

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const LanguageContext = createContext();
 
@@ -11,76 +11,38 @@ export const useLanguage = () => {
 };
 
 export const LanguageProvider = ({ children }) => {
-  const [currentLanguage, setCurrentLanguage] = useState('en');
+  // Read persisted language preference from localStorage, default to Kannada ('kn')
+  const [currentLanguage, setCurrentLanguage] = useState(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('ksm_lang');
+        if (saved && ['en', 'kn', 'sa', 'te'].includes(saved)) {
+          return saved;
+        }
+      }
+    } catch (e) {
+      // Ignore localStorage errors
+    }
+    return 'kn';
+  });
+
+  const changeLanguage = (langCode) => {
+    if (['en', 'kn', 'sa', 'te'].includes(langCode)) {
+      setCurrentLanguage(langCode);
+      try {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('ksm_lang', langCode);
+        }
+      } catch (e) {
+        // Ignore localStorage errors
+      }
+    }
+  };
 
   const translations = {
-    en: {
-      // Navigation
-      home: 'Home',
-      activities: 'Activities',
-      announcements: 'Announcements',
-      contact: 'Contact',
-      adminPanel: 'Admin Panel',
-      
-      // Hero Section
-      heroTitle: 'श्री कौलार शृंगेरी शंकर मठ',
-      heroSubtitle: 'Kolar Sringeri Shankara Mutt',
-      heroDescription: 'A sacred institution dedicated to preserving and propagating the teachings of Adi Shankaracharya and the rich spiritual heritage of Sanatana Dharma. We welcome devotees and seekers from all walks of life to experience the divine atmosphere and participate in our various spiritual activities, discourses, and cultural programs.',
-      heroCTA: 'Explore our spiritual activities, important announcements, and connect with our community',
-      
-      // Welcome Section
-      welcomeTitle: 'स्वागतम् - Welcome',
-      welcomeDescription: 'Welcome to the sacred precincts of Kolar Shankara Mutt, a spiritual haven where ancient wisdom meets modern devotion',
-      welcomeText1: 'The Kolar Shankara Mutt stands as a beacon of spiritual enlightenment, following the noble traditions established by Adi Shankaracharya. Our institution serves as a center for spiritual learning, cultural preservation, and community service.',
-      welcomeText2: 'We invite devotees and seekers from all walks of life to experience the divine atmosphere and participate in our various spiritual activities, discourses, and cultural programs.',
-      
-      // Activities Section
-      activitiesTitle: 'Recent Spiritual Activities',
-      activitiesDescription: 'Explore our latest spiritual and cultural events',
-      noActivities: 'No activities currently scheduled',
-      noActivitiesSub: 'Check back soon for upcoming spiritual events',
-      viewAllActivities: 'View All Activities →',
-      
-      // Announcements Section
-      announcementsTitle: 'Important Announcements',
-      announcementsDescription: 'Stay updated with important news and information',
-      noAnnouncements: 'No announcements currently',
-      noAnnouncementsSub: 'Important updates will appear here',
-      viewAllAnnouncements: 'View All Announcements →',
-      
-      // Contact Section
-      contactTitle: 'Get in Touch',
-      contactDescription: "We'd love to hear from you. Send us a message!",
-      visitUs: 'Visit Us',
-      callUs: 'Call Us',
-      emailUs: 'Email Us',
-      address: 'Kolar Shankara Mutt, Kote, Kolar, Karnataka, India',
-      phone: '+91 83101 51359',
-      phoneHours: 'Mon - Sat, 9AM - 6PM',
-      email: 'info@kolarshankaramutt.org',
-      emailResponse: "We'll respond within 24 hours",
-      fullName: 'Full Name',
-      emailAddress: 'Email Address',
-      message: 'Message',
-      sendMessage: 'Send Message',
-      sending: 'Sending...',
-      enterName: 'Enter your full name',
-      enterEmail: 'Enter your email',
-      enterMessage: 'Tell us how we can help you...',
-      
-      // Footer
-      copyright: '© 2024 Kolar Shankara Mutt. All rights reserved.',
-      contactInfo: 'Contact: info@kolarshankaramutt.org | Phone: +91 83101 51359',
-      
-      // Common
-      loading: 'Loading sacred content...',
-      error: 'Unable to load content. Please check your connection.',
-      tryAgain: 'Try Again',
-      date: 'Date',
-      title: 'Title',
-      description: 'Description'
-    },
-    
+    // =========================================================================
+    // KANNADA (ಕನ್ನಡ) — Primary Official Peetham Language
+    // =========================================================================
     kn: {
       // Navigation
       home: 'ಮುಖಪುಟ',
@@ -88,133 +50,392 @@ export const LanguageProvider = ({ children }) => {
       announcements: 'ಘೋಷಣೆಗಳು',
       contact: 'ಸಂಪರ್ಕ',
       adminPanel: 'ನಿರ್ವಾಹಕ ಫಲಕ',
-      
-      // Hero Section
+      donationNav: 'ಕಾಣಿಕೆ / ಇ-ಸೇವೆ',
+
+      // Hero / Masthead
       heroTitle: 'ಶ್ರೀ ಕೋಲಾರ ಶೃಂಗೇರಿ ಶಂಕರ ಮಠ',
-      heroSubtitle: 'ಕೋಲಾರ ಶೃಂಗೇರಿ ಶಂಕರ ಮಠ',
-      heroDescription: 'ಆದಿ ಶಂಕರಾಚಾರ್ಯರ ಉಪದೇಶಗಳನ್ನು ಸಂರಕ್ಷಿಸುವ ಮತ್ತು ಪ್ರಸಾರ ಮಾಡುವ ಪವಿತ್ರ ಸಂಸ್ಥೆ. ಸನಾತನ ಧರ್ಮದ ಸಮೃದ್ಧ ಆಧ್ಯಾತ್ಮಿಕ ಪರಂಪರೆಯನ್ನು ನಾವು ಸ್ವಾಗತಿಸುತ್ತೇವೆ. ಎಲ್ಲಾ ವರ್ಗದ ಭಕ್ತರು ಮತ್ತು ಅನ್ವೇಷಕರನ್ನು ನಮ್ಮ ವಿವಿಧ ಆಧ್ಯಾತ್ಮಿಕ ಚಟುವಟಿಕೆಗಳು, ಭಾಷಣಗಳು ಮತ್ತು ಸಾಂಸ್ಕೃತಿಕ ಕಾರ್ಯಕ್ರಮಗಳಲ್ಲಿ ಭಾಗವಹಿಸಲು ಆಹ್ವಾನಿಸುತ್ತೇವೆ.',
-      heroCTA: 'ನಮ್ಮ ಆಧ್ಯಾತ್ಮಿಕ ಚಟುವಟಿಕೆಗಳು, ಮುಖ್ಯ ಘೋಷಣೆಗಳು ಮತ್ತು ಸಮುದಾಯದೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಿ',
-      
-      // Welcome Section
-      welcomeTitle: 'ಸ್ವಾಗತ - ಸ್ವಾಗತ',
-      welcomeDescription: 'ಕೋಲಾರ ಶಂಕರ ಮಠದ ಪವಿತ್ರ ಪ್ರದೇಶಗಳಿಗೆ ಸ್ವಾಗತ, ಪ್ರಾಚೀನ ಜ್ಞಾನ ಆಧುನಿಕ ಭಕ್ತಿಯನ್ನು ಭೇಟಿ ಮಾಡುವ ಆಧ್ಯಾತ್ಮಿಕ ಆಶ್ರಯ',
-      welcomeText1: 'ಕೋಲಾರ ಶಂಕರ ಮಠವು ಆದಿ ಶಂಕರಾಚಾರ್ಯರಿಂದ ಸ್ಥಾಪಿತವಾದ ಉನ್ನತ ಸಂಪ್ರದಾಯಗಳನ್ನು ಅನುಸರಿಸಿ ಆಧ್ಯಾತ್ಮಿಕ ಜ್ಞಾನೋದಯದ ದೀಪಸ್ತಂಭವಾಗಿ ನಿಂತಿದೆ. ನಮ್ಮ ಸಂಸ್ಥೆಯು ಆಧ್ಯಾತ್ಮಿಕ ಕಲಿಕೆ, ಸಾಂಸ್ಕೃತಿಕ ಸಂರಕ್ಷಣೆ ಮತ್ತು ಸಮುದಾಯ ಸೇವೆಯ ಕೇಂದ್ರವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.',
-      welcomeText2: 'ಎಲ್ಲಾ ವರ್ಗದ ಭಕ್ತರು ಮತ್ತು ಅನ್ವೇಷಕರನ್ನು ನಮ್ಮ ವಿವಿಧ ಆಧ್ಯಾತ್ಮಿಕ ಚಟುವಟಿಕೆಗಳು, ಭಾಷಣಗಳು ಮತ್ತು ಸಾಂಸ್ಕೃತಿಕ ಕಾರ್ಯಕ್ರಮಗಳಲ್ಲಿ ಭಾಗವಹಿಸಲು ಆಹ್ವಾನಿಸುತ್ತೇವೆ.',
-      
-      // Activities Section
-      activitiesTitle: 'ಇತ್ತೀಚಿನ ಆಧ್ಯಾತ್ಮಿಕ ಚಟುವಟಿಕೆಗಳು',
-      activitiesDescription: 'ನಮ್ಮ ಇತ್ತೀಚಿನ ಆಧ್ಯಾತ್ಮಿಕ ಮತ್ತು ಸಾಂಸ್ಕೃತಿಕ ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ಅನ್ವೇಷಿಸಿ',
-      noActivities: 'ಇತ್ತೀಚೆಗೆ ಯಾವುದೇ ಚಟುವಟಿಕೆಗಳು ಯೋಜಿಸಲಾಗಿಲ್ಲ',
-      noActivitiesSub: 'ಮುಂದಿನ ಆಧ್ಯಾತ್ಮಿಕ ಕಾರ್ಯಕ್ರಮಗಳಿಗಾಗಿ ಶೀಘ್ರದಲ್ಲಿ ಪರಿಶೀಲಿಸಿ',
-      viewAllActivities: 'ಎಲ್ಲಾ ಚಟುವಟಿಕೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ →',
-      
-      // Announcements Section
-      announcementsTitle: 'ಮುಖ್ಯ ಘೋಷಣೆಗಳು',
-      announcementsDescription: 'ಮುಖ್ಯ ಸುದ್ದಿಗಳು ಮತ್ತು ಮಾಹಿತಿಯೊಂದಿಗೆ ನವೀಕೃತವಾಗಿರಿ',
-      noAnnouncements: 'ಇತ್ತೀಚೆಗೆ ಯಾವುದೇ ಘೋಷಣೆಗಳಿಲ್ಲ',
-      noAnnouncementsSub: 'ಮುಖ್ಯ ನವೀಕರಣಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ',
-      viewAllAnnouncements: 'ಎಲ್ಲಾ ಘೋಷಣೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ →',
-      
-      // Contact Section
-      contactTitle: 'ಸಂಪರ್ಕಿಸಿ',
-      contactDescription: 'ನಿಮ್ಮಿಂದ ಕೇಳಲು ನಮಗೆ ಇಷ್ಟವಿದೆ. ನಮಗೆ ಸಂದೇಶ ಕಳುಹಿಸಿ!',
-      visitUs: 'ನಮ್ಮನ್ನು ಭೇಟಿ ಮಾಡಿ',
-      callUs: 'ನಮ್ಮನ್ನು ಕರೆ ಮಾಡಿ',
-      emailUs: 'ನಮಗೆ ಇಮೇಲ್ ಮಾಡಿ',
-      address: 'ಕೋಲಾರ ಶಂಕರ ಮಠ, ಕೋಟೆ, ಕೋಲಾರ, ಕರ್ನಾಟಕ, ಭಾರತ',
-      phone: '+91 83101 51359',
-      phoneHours: 'ಸೋಮ - ಶನಿ, ಬೆಳಗ್ಗೆ 9 - ಸಂಜೆ 6',
-      email: 'info@kolarshankaramutt.org',
-      emailResponse: 'ನಾವು 24 ಗಂಟೆಗಳಲ್ಲಿ ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತೇವೆ',
-      fullName: 'ಪೂರ್ಣ ಹೆಸರು',
-      emailAddress: 'ಇಮೇಲ್ ವಿಳಾಸ',
-      message: 'ಸಂದೇಶ',
-      sendMessage: 'ಸಂದೇಶ ಕಳುಹಿಸಿ',
-      sending: 'ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ...',
-      enterName: 'ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ',
-      enterEmail: 'ನಿಮ್ಮ ಇಮೇಲ್ ನಮೂದಿಸಿ',
-      enterMessage: 'ನಾವು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು ಎಂದು ಹೇಳಿ...',
-      
-      // Footer
-      copyright: '© 2024 ಕೋಲಾರ ಶಂಕರ ಮಠ. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದುಕೊಳ್ಳಲಾಗಿದೆ.',
-      contactInfo: 'ಸಂಪರ್ಕ: info@kolarshankaramutt.org | ಫೋನ್: +91 83101 51359',
-      
+      heroSubtitle: 'ಕೋಲಾರ ಶೃಂಗೇರಿ ಶ್ರೀಶಂಕರ ಮಠ',
+      heroDescription: 'ಆದಿ ಶಂಕರಾಚಾರ್ಯರ ಉಪದೇಶಗಳನ್ನು ಸಂರಕ್ಷಿಸುವ ಮತ್ತು ಪ್ರಸಾರ ಮಾಡುವ ಪವಿತ್ರ ಸಂಸ್ಥೆ. ದಕ್ಷಿಣಾಮ್ನಾಯ ಶೃಂಗೇರಿ ಶ್ರೀಶಾರದಾ ಪೀಠದ ದಿವ್ಯ ಪರಂಪರೆ.',
+      topBarWelcome: 'ಕೋಲಾರ ಶೃಂಗೇರಿ ಶ್ರೀಶಂಕರ ಮಠ | ದಕ್ಷಿಣಾಮ್ನಾಯ ಶೃಂಗೇರಿ ಶ್ರೀಶಾರದಾ ಪೀಠಮ್ ಶಾಖಾ ಮಠ',
+
+      // Darshan Timings & Status
+      darshanOpen: 'ದರ್ಶನ ಲಭ್ಯವಿದೆ',
+      darshanClosed: 'ಪೂಜಾ ವಿಧಿವಿಧಾನಗಳಿಗಾಗಿ ಬಾಗಿಲು ಮುಚ್ಚಿದೆ',
+      darshanClosesAt1230: 'ಮಧ್ಯಾಹ್ನ 12:30 ರವರೆಗೆ ದರ್ಶನ',
+      darshanClosesAt830: 'ರಾತ್ರಿ 8:30 ರವರೆಗೆ ದರ್ಶನ',
+      nextDarshanPrefix: 'ಮುಂದಿನ ದರ್ಶನ: ',
+      morningDarshan: 'ಬೆಳಗಿನ ದರ್ಶನ',
+      mahamangalarathi: 'ಮಹಾಮಂಗಳಾರತಿ',
+      eveningDarshan: 'ಸಂಜೆಯ ದರ್ಶನ',
+      morningDarshanTime: '08:00 AM – 12:30 PM',
+      mahamangalarathiTime: '12:00 PM & 08:00 PM',
+      eveningDarshanTime: '06:00 PM – 08:30 PM',
+
+      // Quick Actions
+      onlineSeva: 'ಕಾಣಿಕೆ / ಇ-ಸೇವೆ',
+      onlineSevaSub: 'ಆನ್‌ಲೈನ್ ಸೇವಾ ಬುಕಿಂಗ್',
+      spiritualActivities: 'ಧಾರ್ಮಿಕ ಕಾರ್ಯಕ್ರಮಗಳು',
+      spiritualActivitiesSub: 'ಪೂಜೆಗಳು & ಉತ್ಸವಗಳು',
+      muttAnnouncements: 'ವಿಶೇಷ ಪ್ರಕಟಣೆಗಳು',
+      muttAnnouncementsSub: 'ಮಠದ ಸುತ್ತೋಲೆಗಳು',
+      visitContact: 'ಮಠದ ವಿಳಾಸ & ಸಂಪರ್ಕ',
+      visitContactSub: 'ದರ್ಶನಕ್ಕೆ ಭೇಟಿ ನೀಡಿ',
+
+      // Sacred Shloka
+      sacredShloka: '॥ ॐ ಶ್ರೀ ಶಾರದಾಂಬಾ ಪ್ರಸನ್ನ ॐ ॥',
+
+      // Heritage Section
+      heritageTitle: 'ದಕ್ಷಿಣಾಮ್ನಾಯ ಶೃಂಗೇರಿ ಶ್ರೀಶಾರದಾ ಪೀಠಮ್ ಶಾಖಾ ಮಠ',
+      heritageSubtitle: 'ಕೋಲಾರ ಶೃಂಗೇರಿ ಶ್ರೀಶಂಕರ ಮಠ — ದಕ್ಷಿಣಾಮ್ನಾಯ ಶ್ರೀ ಶಾರದಾ ಪೀಠ, ಶೃಂಗೇರಿಯ ಪವಿತ್ರ ಶಾಖಾ ಮಠ',
+      heritageIntro: 'ಕೋಲಾರ ಶೃಂಗೇರಿ ಶ್ರೀ ಶಂಕರ ಮಠವು 1928 ರಲ್ಲಿ ಜಗದ್ಗುರು ಶ್ರೀ ಆದಿ ಶಂಕರಾಚಾರ್ಯರ ಪವಿತ್ರ ಪರಂಪರೆಯ ದಿವ್ಯ ಆಶೀರ್ವಾದದೊಂದಿಗೆ ಸ್ಥಾಪಿತವಾಯಿತು. ಸನಾತನ ಧರ್ಮದ ರಕ್ಷಣೆ, ವೈದಿಕ ಜ್ಞಾನದ ಪ್ರಸಾರ ಮತ್ತು ಸಂಸ್ಕೃತ ಸಾಂಸ್ಕೃತಿಕ ಪರಂಪರೆಯನ್ನು ಎತ್ತಿಹಿಡಿಯುವ ಪವಿತ್ರ ಕೇಂದ್ರವಾಗಿ ಮಠವು ಕಂಗೊಳಿಸುತ್ತಿದೆ.',
+
+      // Milestones
+      milestonesHeading: '📜 ಪವಿತ್ರ ಇತಿಹಾಸ ಮತ್ತು ಪ್ರಮುಖ ಮೈಲಿಗಲ್ಲುಗಳು',
+      m1928Title: 'ಮಠದ ಸಂಸ್ಥಾಪನೆ',
+      m1928Desc: 'ಜಗದ್ಗುರು ಶ್ರೀ ಆದಿ ಶಂಕರಾಚಾರ್ಯರ ಅದ್ವೈತ ಪರಂಪರೆಯ ದಿವ್ಯ ಆಶೀರ್ವಾದ ಮತ್ತು ಸಂಕಲ್ಪದೊಂದಿಗೆ ಮಠ ಸ್ಥಾಪನೆಯಾಯಿತು.',
+      m1930Title: 'ಶ್ರೀ ಶಂಕರಾಚಾರ್ಯ ಪ್ರತಿಷ್ಠಾಪನೆ',
+      m1930Desc: 'ಶ್ರೀ ಶಂಕರಾಚಾರ್ಯರ ಪವಿತ್ರ ಮೂರ್ತಿ ಪ್ರತಿಷ್ಠಾಪನೆಯನ್ನು ನೆರವೇರಿಸಿ ಆಧ್ಯಾತ್ಮಿಕ ಭದ್ರ ಬುನಾದಿಯನ್ನು ಹಾಕಲಾಯಿತು.',
+      m1965Title: 'ಶ್ರೀ ಶಾರದಾಂಬಾ ಕುಂಭಾಭಿಷೇಕ',
+      m1965Desc: 'ಆವಣಿ ಮಠದ ಪರಮಪೂಜ್ಯ ಶ್ರೀ ಅಭಿನವೋದಂಡ ವಿದ್ಯಾರಣ್ಯಭಾರತೀ ಮಹಾಸ್ವಾಮಿಗಳ ಅಮೃತ ಹಸ್ತದಿಂದ ಶ್ರೀ ಶಾರದಾಂಬೆಯ ಪ್ರತಿಷ್ಠಾ ಕುಂಭಾಭಿಷೇಕ ನೆರವೇರಿತು.',
+      m2019Title: 'ಶೃಂಗೇರಿ ಪೀಠದ ಮಾರ್ಗದರ್ಶನ',
+      m2019Desc: 'ಮಠವನ್ನು ಔಪಚಾರಿಕವಾಗಿ ದಕ್ಷಿಣಾಮ್ನಾಯ ಶೃಂಗೇರಿ ಶ್ರೀಶಾರದಾ ಪೀಠದ ದಿವ್ಯ ಮಾರ್ಗದರ್ಶನಕ್ಕೆ ತರಲಾಯಿತು.',
+      mPresentTitle: 'ಧರ್ಮಾಧಿಕಾರಿಗಳ ನೇತೃತ್ವ',
+      mPresentDesc: 'ಪ್ರಸ್ತುತ ಶ್ರೀ ರಾಮಕೃಷ್ಣ ಜೆ. ಎನ್. ಅವರು ಕೋಲಾರ ಶ್ರೀಮಠದ ಧರ್ಮಾಧಿಕಾರಿಗಳಾಗಿ ಶ್ರದ್ಧಾಭಕ್ತಿಗಳಿಂದ ಮುನ್ನಡೆಸುತ್ತಿದ್ದಾರೆ.',
+
+      // Weekly Programs
+      programsHeading: '🪔 ಶ್ರೀಮಠದಲ್ಲಿ ನಡೆಯುವ ನಿತ್ಯ & ಸಾಪ್ತಾಹಿಕ ಕಾರ್ಯಕ್ರಮಗಳು',
+      discoursesTitle: 'ಧಾರ್ಮಿಕ ಉಪನ್ಯಾಸಗಳು',
+      discoursesSchedule: 'ನಿಯಮಿತ ಸತ್ಸಂಗ',
+      discoursesDesc: 'ವಿದ್ವಾಂಸರಿಂದ ಧರ್ಮ, ಉಪನಿಷತ್ತುಗಳು ಮತ್ತು ಭಗವದ್ಗೀತೆ, ಅದ್ವೈತ ವೇದಾಂತದ ಕುರಿತು ವಿಶೇಷ ಪ್ರವಚನಗಳು.',
+      stotraTitle: 'ಸ್ತೋತ್ರ ಪಾಠ ತರಗತಿಗಳು',
+      stotraSchedule: 'ಪ್ರತಿ ಗುರುವಾರ',
+      stotraDesc: 'ಶ್ರೀ ಶಂಕರ ಭಗವತ್ಪಾದರ ಸ್ತೋತ್ರಗಳು, ಸೌಂದರ್ಯ ಲಹರಿ ಮತ್ತು ದೇವತಾ ಸ್ತುತಿಗಳ ಶ್ರದ್ಧಾಪೂರ್ವಕ ಕಲಿಕೆ.',
+      sanskritTitle: 'ಸಂಸ್ಕೃತ ಶಿಕ್ಷಣ',
+      sanskritSchedule: 'ಶನಿವಾರ & ಭಾನುವಾರ ಸಂಜೆ',
+      sanskritDesc: 'ಎಲ್ಲಾ ವಯೋಮಾನದವರಿಗೂ ಸರಳ ಸಂಸ್ಕೃತ ಸಂಭಾಷಣೆ, ಸುಭಾಷಿತಗಳು ಮತ್ತು ವ್ಯಾಕರಣ ಶಿಕ್ಷಣ.',
+
+      // Vision
+      visionTitle: '🌟 ಶ್ರೀಮಠದ ದೃಷ್ಟಿಕೋನ & ಸಂಕಲ್ಪ',
+      visionDesc: 'ಕೋಲಾರ ಶ್ರೀಮಠವು ಸನಾತನ ಧರ್ಮದ ಸಂರಕ್ಷಣೆ, ವೇದಾಧ್ಯಯನ, ಸಂಸ್ಕೃತ ಪ್ರಚಾರ ಹಾಗೂ ಸಮಾಜದಲ್ಲಿ ಧರ್ಮಜಾಗೃತಿಯ ಬೆಳಕಾಗಿ ಸದಾ ಮುಂಚೂಣಿಯಲ್ಲಿದೆ.',
+      vLearning: 'ಆಧ್ಯಾತ್ಮಿಕ ಜ್ಞಾನ',
+      vSanskrit: 'ಸಂಸ್ಕೃತ ಪ್ರಚಾರ',
+      vCulture: 'ಸಾಂಸ್ಕೃತಿಕ ಪುನರುತ್ಥಾನ',
+      vDharma: 'ಸನಾತನ ಧರ್ಮ',
+
+      // 4 Pillars
+      p1Title: 'ಜಗದ್ಗುರು ಪರಂಪರೆ',
+      p1Desc: 'ಜಗದ್ಗುರು ಶ್ರೀ ಆದಿ ಶಂಕರಾಚಾರ್ಯರ ಮತ್ತು ಶೃಂಗೇರಿ ಜಗದ್ಗುರುಗಳ ಪಾವನ ಪರಂಪರೆಯ ಪೂಜ್ಯ ಗೌರವ.',
+      p2Title: 'ನಿತ್ಯ ಪೂಜೆ & ಸೇವೆಗಳು',
+      p2Desc: 'ದೈನಂದಿನ ವೈದಿಕ ವಿಧಿವಿಧಾನಗಳು, ಪಂಚಾಮೃತ ಅಭಿಷೇಕ, ಚಂದ್ರಮೌಳೀಶ್ವರ ಪೂಜೆ ಮತ್ತು ಮಹಾಮಂಗಳಾರತಿ.',
+      p3Title: 'ಅನ್ನದಾನ ಮಹಾದಾನ',
+      p3Desc: 'ಮಠಕ್ಕೆ ಆಗಮಿಸುವ ಸದ್ಭಕ್ತರಿಗೆ, ಸಾಧಕರಿಗೆ ಶ್ರದ್ಧೆಯಿಂದ ನಿತ್ಯ ಅನ್ನಪ್ರಸಾದ ವಿನಿಯೋಗ.',
+      p4Title: 'ವೇದ & ಸಂಸ್ಕೃತ',
+      p4Desc: 'ಸಾಂಪ್ರದಾಯಿಕ ವೇದಾಧ್ಯಯನ, ಸ್ತೋತ್ರ ಪಠಣ ಮತ್ತು ಸಾಂಸ್ಕೃತಿಕ ಪ್ರವಚನಗಳ ಪ್ರೋತ್ಸಾಹ.',
+
+      // Seva Banner
+      sevaBannerTitle: '🛕 ಆನ್‌ಲೈನ್ ಸೇವಾ ಸಮರ್ಪಣೆ & ಕಾಣಿಕೆ',
+      sevaBannerDesc: 'ದೈನಂದಿನ ಪೂಜೆಗಳು, ವಿಶೇಷ ಅರ್ಚನೆ, ಅಭಿಷೇಕ ಮತ್ತು ಅನ್ನದಾನ ಸೇವೆಗಳಲ್ಲಿ ವಿಶ್ವದ ಯಾವುದೇ ಮೂಲೆಯಿಂದ ಭಾಗವಹಿಸಿ. ತಕ್ಷಣವೇ ಅಧಿಕೃತ ದ್ವಿಭಾಷಾ ಡಿಜಿಟಲ್ ರಶೀದಿಯನ್ನು ಪಡೆಯಿರಿ.',
+      bookSevaBtn: 'ಇ-ಸೇವೆ ಸಲ್ಲಿಸಿ →',
+      contactOfficeBtn: 'ಮಠದ ಕಚೇರಿ ಸಂಪರ್ಕ',
+
+      // Activities & Announcements
+      activitiesTitle: 'ಧಾರ್ಮಿಕ ಕಾರ್ಯಕ್ರಮಗಳು',
+      activitiesSub: 'ಮುಂಬರುವ ಉತ್ಸವಗಳು, ಹವನಗಳು ಮತ್ತು ಸಾಂಸ್ಕೃತಿಕ ಆಚರಣೆಗಳು',
+      viewAllActivities: 'ಎಲ್ಲಾ ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ವೀಕ್ಷಿಸಿ →',
+      noActivities: 'ಪ್ರಸ್ತುತ ಯಾವುದೇ ಕಾರ್ಯಕ್ರಮಗಳು ಯೋಜಿಸಲಾಗಿಲ್ಲ.',
+      noActivitiesSub: 'ಮುಂದಿನ ಪೂಜಾ ಕಾರ್ಯಕ್ರಮಗಳ ವಿವರಗಳು ಶೀಘ್ರದಲ್ಲೇ ಪ್ರಕಟವಾಗಲಿವೆ.',
+
+      // Announcements
+      announcementsTitle: 'ವಿಶೇಷ ಪ್ರಕಟಣೆಗಳು',
+      announcementsSub: 'ಮಠದ ಸುತ್ತೋಲೆಗಳು, ಸೇವಾ ವೇಳಾಪಟ್ಟಿ ಮತ್ತು ಮುಖ್ಯ ಸೂಚನೆಗಳು',
+      viewAllAnnouncements: 'ಎಲ್ಲಾ ಪ್ರಕಟಣೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ →',
+      noAnnouncements: 'ಪ್ರಸ್ತುತ ಯಾವುದೇ ಹೊಸ ಪ್ರಕಟಣೆಗಳಿಲ್ಲ.',
+      noAnnouncementsSub: 'ಹೊಸ ಸುತ್ತೋಲೆಗಳು ಇಲ್ಲಿ ಪ್ರಕಟಗೊಳ್ಳಲಿವೆ.',
+
       // Common
-      loading: 'ಪವಿತ್ರ ವಿಷಯವನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...',
-      error: 'ವಿಷಯವನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ.',
-      tryAgain: 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ',
+      readDetails: 'ವಿವರಗಳನ್ನು ಓದಿ →',
+      close: 'ಮುಚ್ಚಿ',
+      loading: 'ಮಾಹಿತಿ ಲೋಡ್ ಆಗುತ್ತಿದೆ...',
+      error: 'ವಿಷಯವನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ.',
+      retry: 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ',
       date: 'ದಿನಾಂಕ',
       title: 'ಶೀರ್ಷಿಕೆ',
-      description: 'ವಿವರಣೆ'
+      attachedMedia: 'ಲಗತ್ತಿಸಲಾದ ದಾಖಲೆಗಳು & ಚಿತ್ರಗಳು',
+      openNewTab: 'ಹೊಸ ಪುಟದಲ್ಲಿ ತೆರೆಯಿರಿ',
+      pdfDoc: 'PDF ದಾಖಲೆ',
+
+      // Footer
+      quickLinks: 'ತ್ವರಿತ ಲಿಂಕ್‌ಗಳು',
+      darshanTimings: 'ದರ್ಶನದ ಸಮಯ',
+      contactUs: 'ಸಂಪರ್ಕಿಸಿ',
+      footerAbout: 'ಕೋಲಾರ ಶೃಂಗೇರಿ ಶ್ರೀಶಂಕರ ಮಠವು ಜಗದ್ಗುರು ಶ್ರೀ ಆದಿ ಶಂಕರಾಚಾರ್ಯರಿಂದ ಸ್ಥಾಪಿತವಾದ ಅದ್ವೈತ ವೇದಾಂತ ಪರಂಪರೆಯನ್ನು ಎತ್ತಿಹಿಡಿಯುವ ಪವಿತ್ರ ಸಂಸ್ಥೆಯಾಗಿದೆ. ಸನಾತನ ಧರ್ಮ, ವೇದಾಧ್ಯಯನ ಮತ್ತು ಸಮಾಜ ಕಲ್ಯಾಣಕ್ಕೆ ಸಮರ್ಪಿತವಾಗಿದೆ.'
     },
-    
+
+    // =========================================================================
+    // ENGLISH
+    // =========================================================================
+    en: {
+      // Navigation
+      home: 'Home',
+      activities: 'Activities',
+      announcements: 'Announcements',
+      contact: 'Contact',
+      adminPanel: 'Admin Panel',
+      donationNav: 'Donation / Seva',
+
+      // Hero / Masthead
+      heroTitle: 'Kolar Sringeri SriShankara Mutt',
+      heroSubtitle: 'Kolar Sringeri SriShankara Mutt',
+      heroDescription: 'A sacred institution dedicated to preserving and propagating the Advaita Vedanta teachings of Adi Shankaracharya and the rich spiritual heritage of Dakshinamnaya Sri Sharada Peetham, Sringeri.',
+      topBarWelcome: 'Kolar Sringeri SriShankara Mutt | Branch of Dakshinamnaya Sri Sharada Peetham, Sringeri',
+
+      // Darshan Timings & Status
+      darshanOpen: 'Sanctum Open for Darshan',
+      darshanClosed: 'Sanctum Closed for Rituals',
+      darshanClosesAt1230: 'Open until 12:30 PM',
+      darshanClosesAt830: 'Open until 08:30 PM',
+      nextDarshanPrefix: 'Next Darshan: ',
+      morningDarshan: 'Morning Darshan',
+      mahamangalarathi: 'Mahamangalarathi',
+      eveningDarshan: 'Evening Darshan',
+      morningDarshanTime: '08:00 AM – 12:30 PM',
+      mahamangalarathiTime: '12:00 PM & 08:00 PM',
+      eveningDarshanTime: '06:00 PM – 08:30 PM',
+
+      // Quick Actions
+      onlineSeva: 'Online Seva & Donation',
+      onlineSevaSub: 'Digital Devotee Sevas',
+      spiritualActivities: 'Spiritual Activities',
+      spiritualActivitiesSub: 'Pooja & Utsavas',
+      muttAnnouncements: 'Mutt Announcements',
+      muttAnnouncementsSub: 'Circulars & Notices',
+      visitContact: 'Visit & Contact Us',
+      visitContactSub: 'Temple Address & Timings',
+
+      // Sacred Shloka
+      sacredShloka: '॥ ॐ Sri Sharadamba Prasanna ॐ ॥',
+
+      // Heritage Section
+      heritageTitle: 'Branch of Dakshinamnaya Sri Sharada Peetham, Sringeri',
+      heritageSubtitle: 'Kolar Sringeri SriShankara Mutt — Sacred Branch of Dakshinamnaya Sri Sharada Peetham',
+      heritageIntro: 'Kolar Sringeri Sri Shankara Math was established in 1928 with the divine blessings of the revered lineage (parampara) of Jagadguru Sri Adi Shankaracharya. Standing as an eternal beacon of Sanatana Dharma, the Srimath fosters spiritual wisdom, Sanskrit education, and cultural revival.',
+
+      // Milestones
+      milestonesHeading: '📜 Sacred Historical Milestones & Lineage',
+      m1928Title: 'Foundational Inception',
+      m1928Desc: 'Established in 1928 with the divine blessings and lineage of Jagadguru Sri Adi Shankaracharya.',
+      m1930Title: 'Shankaracharya Pratishthapana',
+      m1930Desc: 'The sacred idol of Sri Adi Shankaracharya was consecrated, laying the spiritual bedrock of the Math.',
+      m1965Title: 'Sharadamba Kumbhabhisheka',
+      m1965Desc: 'Pratishtha Kumbhabhisheka of Sri Sharadamba performed by Paramapujya Sri Abhinavodanda Vidyaranyabharathi Mahaswamiji of Avani Math.',
+      m2019Title: 'Sringeri Peetham Guidance',
+      m2019Desc: 'Formally brought under the supreme guidance of Dakshinamnaya Sringeri Sri Sharada Peetham.',
+      mPresentTitle: 'Dharmadhikari Leadership',
+      mPresentDesc: 'Led with deep devotion by Sri Ramakrishna J. N., serving as the Dharmadhikari (Branch Head).',
+
+      // Weekly Programs
+      programsHeading: '🪔 Regular Spiritual & Cultural Programs at the Srimath',
+      discoursesTitle: 'Spiritual Discourses',
+      discoursesSchedule: 'Periodic Satsangs',
+      discoursesDesc: 'Enlightening talks by learned Vedic scholars on Dharma, Upanishads, and Advaita Vedanta.',
+      stotraTitle: 'Stotra Classes',
+      stotraSchedule: 'Every Thursday',
+      stotraDesc: 'Structured chanting classes teaching sacred hymns, Soundarya Lahari, and Sri Shankara compositions.',
+      sanskritTitle: 'Sanskrit Classes',
+      sanskritSchedule: 'Sat & Sun Evening',
+      sanskritDesc: 'Everyday spoken Sanskrit, devotional shlokas, and foundational grammar for all age groups.',
+
+      // Vision
+      visionTitle: '🌟 Vision & Spiritual Mission',
+      visionDesc: 'Kolar Srimath stands as a vibrant sanctuary dedicated to preserving Vedic wisdom, fostering devotion, and nurturing community harmony.',
+      vLearning: 'Spiritual Learning',
+      vSanskrit: 'Sanskrit Propagation',
+      vCulture: 'Cultural Revival',
+      vDharma: 'Sanatana Dharma',
+
+      // 4 Pillars
+      p1Title: 'Jagadguru Tradition',
+      p1Desc: 'Revering the sacred lineage of Jagadguru Sri Adi Shankaracharya and the reigning Sringeri Pontiffs.',
+      p2Title: 'Nitya Pooja & Sevas',
+      p2Desc: 'Daily Vedic rituals, Panchamrutha Abhisheka, Chandramouleshwara Pooja, and evening Mahamangalarathi.',
+      p3Title: 'Annadanam Mahadan',
+      p3Desc: 'Nitya Mahaprasadam served with devotion to visiting pilgrims, students, and devotees.',
+      p4Title: 'Veda & Samskrita',
+      p4Desc: 'Fostering traditional Vedic learning, Sanskrit recitation, and cultural discourses.',
+
+      // Seva Banner
+      sevaBannerTitle: '🛕 Online Seva Booking & Devotee Kaanike',
+      sevaBannerDesc: 'Participate in daily sanctum rituals, special archana, panchamrutha abhisheka, and sacred Annadanam from anywhere in the world. Receive instant official bilingual digital receipts.',
+      bookSevaBtn: 'Book Online Seva →',
+      contactOfficeBtn: 'Contact Mutt Office',
+
+      // Activities & Announcements
+      activitiesTitle: 'Spiritual Activities',
+      activitiesSub: 'Upcoming celebrations, havans, and cultural festivals',
+      viewAllActivities: 'View All Activities →',
+      noActivities: 'No activities currently scheduled.',
+      noActivitiesSub: 'Check back soon for upcoming celebrations and festivals.',
+
+      // Announcements
+      announcementsTitle: 'Important Notices',
+      announcementsSub: 'Timely circulars, seva schedules, and mutt notifications',
+      viewAllAnnouncements: 'View All Announcements →',
+      noAnnouncements: 'No active announcements currently.',
+      noAnnouncementsSub: 'Important circulars will be published here.',
+
+      // Common
+      readDetails: 'Read Details →',
+      close: 'Close',
+      loading: 'Loading sacred content...',
+      error: 'Unable to load content. Please check your connection.',
+      retry: 'Retry Connection',
+      date: 'Date',
+      title: 'Title',
+      attachedMedia: 'Attached Media & Documents',
+      openNewTab: 'Open in New Tab',
+      pdfDoc: 'PDF Document',
+
+      // Footer
+      quickLinks: 'Quick Links',
+      darshanTimings: 'Darshan Timings',
+      contactUs: 'Contact Us',
+      footerAbout: 'Kolar Sringeri SriShankara Mutt is a sacred institution adhering to the pure Vedic tradition established by Jagadguru Sri Adi Shankaracharya, dedicated to spiritual wisdom, dharma, and community welfare.'
+    },
+
+    // =========================================================================
+    // SANSKRIT (संस्कृतम्)
+    // =========================================================================
     sa: {
       // Navigation
       home: 'गृहम्',
-      activities: 'कार्यक्रमाः',
+      activities: 'कार्यक्रमाಃ',
       announcements: 'घोषणाः',
       contact: 'सम्पर्कः',
-      adminPanel: 'प्रशासकीय फलकम्',
-      
-      // Hero Section
-      heroTitle: 'श्री कोलार शृङ्गेरी शङ्कर मठः',
-      heroSubtitle: 'कोलार शृङ्गेरी शङ्कर मठः',
-      heroDescription: 'आदि शङ्कराचार्यस्य उपदेशानां संरक्षणाय तथा प्रसाराय समर्पितं पवित्रं संस्थानम्। सनातनधर्मस्य समृद्धायाः आध्यात्मिकायाः परम्परायाः संवर्धनाय। सर्वेषां वर्गाणां भक्तानां साधकानां च आह्वानं कुर्मः ये अस्माकं विविधेषु आध्यात्मिकेषु कार्येषु, प्रवचनेषु सांस्कृतिकेषु च कार्यक्रमेषु भागं गृह्णीयुः।',
-      heroCTA: 'अस्माकं आध्यात्मिकानि कार्याणि, महत्वपूर्णाः घोषणाः समुदायेन सह सम्पर्कं च अन्वेषयत',
-      
-      // Welcome Section
-      welcomeTitle: 'स्वागतम् - स्वागतम्',
-      welcomeDescription: 'कोलार शङ्कर मठस्य पवित्रेषु प्रदेशेषु स्वागतम्, यत्र प्राचीनं ज्ञानं आधुनिकायाः भक्तेः साक्षात्कारं करोति',
-      welcomeText1: 'कोलार शङ्कर मठः आदि शङ्कराचार्यैः स्थापितानां उन्नतानां परम्पराणां अनुसरणेन आध्यात्मिकस्य ज्ञानोदयस्य दीपस्तम्भः इव तिष्ठति। अस्माकं संस्था आध्यात्मिकायाः शिक्षायाः, सांस्कृतिकस्य संरक्षणस्य समुदायस्य सेवायाः च केंद्रं भवति।',
-      welcomeText2: 'सर्वेषां वर्गाणां भक्तानां साधकानां च आह्वानं कुर्मः ये अस्माकं विविधेषु आध्यात्मिकेषु कार्येषु, प्रवचनेषु सांस्कृतिकेषु च कार्यक्रमेषु भागं गृह्णीयुः।',
-      
-      // Activities Section
-      activitiesTitle: 'साम्प्रतिकानि आध्यात्मिकानि कार्याणि',
-      activitiesDescription: 'अस्माकं साम्प्रतिकानि आध्यात्मिकानि सांस्कृतिकानि च कार्याणि अन्वेषयत',
-      noActivities: 'साम्प्रतं कोऽपि कार्यक्रमः नियोजितः',
-      noActivitiesSub: 'आगामिकेषु आध्यात्मिकेषु कार्येषु शीघ्रं पुनः पश्यत',
-      viewAllActivities: 'सर्वाणि कार्याणि पश्यत →',
-      
-      // Announcements Section
+      adminPanel: 'प्रशासकीयफलकम्',
+      donationNav: 'समर्पणम् / ई-सेवा',
+
+      // Hero / Masthead
+      heroTitle: 'श्री कोलार शृङ्गेरी शङ्करमठः',
+      heroSubtitle: 'कोलार शृङ्गेरी शङ्करमठः',
+      heroDescription: 'आदिशङ्कराचार्यस्य अद्वैतवेदान्तोपदेशानां दक्षिणाम्नाय शृङ्गेरी श्रीशारदापीठस्य च दिव्यपरम्परायाः संरक्षणाय समर्पितं पवित्रं संस्थानम्।',
+      topBarWelcome: 'श्री कोलार शृङ्गेरी शङ्करमठः | दक्षिणाम्नाय शृङ्गेरी श्रीशारदापीठस्य शाखा',
+
+      // Darshan Timings & Status
+      darshanOpen: 'दर्शनं लभ्यते',
+      darshanClosed: 'पूजाविधेः कृते पिहितम्',
+      darshanClosesAt1230: 'मध्याह्न १२:३० पर्यन्तम्',
+      darshanClosesAt830: 'रात्रौ ०८:३० पर्यन्तम्',
+      nextDarshanPrefix: 'अग्रिमदर्शनम्: ',
+      morningDarshan: 'प्रातः दर्शनम्',
+      mahamangalarathi: 'महामङ्गलारती',
+      eveningDarshan: 'सायं दर्शनम्',
+      morningDarshanTime: '०८:०० AM – १२:३० PM',
+      mahamangalarathiTime: '१२:०० PM & ०८:०० PM',
+      eveningDarshanTime: '०६:०० PM – ०८:३० PM',
+
+      // Quick Actions
+      onlineSeva: 'ई-सेवा तथा समर्पणम्',
+      onlineSevaSub: 'आन्तर्जालिकसेवा',
+      spiritualActivities: 'धार्मिककार्यक्रमाः',
+      spiritualActivitiesSub: 'पूजा उत्सवाश्च',
+      muttAnnouncements: 'मठस्य घोषणाः',
+      muttAnnouncementsSub: 'विशेषाः सूचकाः',
+      visitContact: 'सम्पर्कः तथा वासः',
+      visitContactSub: 'मठस्य सङ्केतः',
+
+      // Sacred Shloka
+      sacredShloka: '॥ ॐ श्री शारदाम्बा प्रसन्ना ॐ ॥',
+
+      // Heritage Section
+      heritageTitle: 'दक्षिणाम्नाय शृङ्गेरी श्रीशारदापीठम् शाखा मठः, कोलारः',
+      heritageSubtitle: 'कोलार शृङ्गेरी श्रीशङ्करमठः — दक्षिणाम्नाय श्रीशारदापीठस्य शृङ्गेर्याः पवित्रा शाखा',
+      heritageIntro: 'कोलार शृङ्गेरी श्री शङ्कर मठः १९२८ तमे वर्षे जगद्गुरु श्री आदिशङ्कराचार्याणां दिव्यपरम्परया आशीर्वादेन संस्थापितः। सनातनधर्मस्य वैदिकसंस्कृतेः च संरक्षणाय मठः दीपस्तम्भवत् वर्तते।',
+
+      // Milestones
+      milestonesHeading: '📜 पवित्राः ऐतिहासिकाः सोपानाः',
+      m1928Title: 'मठस्य संस्थापनम्',
+      m1928Desc: '१९२८ तमे वर्षे जगद्गुरु श्री आदिशङ्कराचार्यस्य परम्परया आशीर्वादेन स्थापितम्।',
+      m1930Title: 'श्रीशङ्कराचार्य प्रतिष्ठापनम्',
+      m1930Desc: 'श्रीशङ्कराचार्यस्य पवित्रमूर्तेः प्रतिष्ठापनेन आध्यात्मिकः दृढाधारः निर्मितः।',
+      m1965Title: 'श्रीशारदाम्बा कुम्भाभिषेकः',
+      m1965Desc: 'अवणिमठस्य परमपूज्यैः श्री अभिनवोदण्डविद्यारण्यभारतीमहास्वामिभिः प्रतिष्ठा कुम्भाभिषेकः कृतः।',
+      m2019Title: 'शृङ्गेरीपीठस्य मार्गदर्शनम्',
+      m2019Desc: '२०१९ तमे वर्षे दक्षिणाम्नाय शृङ्गेरी शारदापीठस्य साक्षात् दिव्यशासने आनीतम्।',
+      mPresentTitle: 'धर्माधिकारिणां नेतृत्वम्',
+      mPresentDesc: 'साम्प्रतं श्री रामकृष्ण जे. एन्. महोदयाः मठे धर्माधिकारिरूपेण सेवां कुर्वन्ति।',
+
+      // Weekly Programs
+      programsHeading: '🪔 मठे आयोजिताः नित्य-साप्ताहिककार्यक्रमाः',
+      discoursesTitle: 'धार्मिकप्रवचनानि',
+      discoursesSchedule: 'नियतसत्सङ्गाः',
+      discoursesDesc: 'विद्वद्भिः धर्मे उपनिषत्सु अद्वैतवेदान्ते च क्रियमाणाः उपन्यासाः।',
+      stotraTitle: 'स्तोत्रपाठाः',
+      stotraSchedule: 'प्रतिगुरुवासरम्',
+      stotraDesc: 'श्रीमदादिशङ्कराचार्यस्य स्तोत्राणां सौन्दर्यलहर्याः च भक्तिभावपूर्णः अभ्यासः।',
+      sanskritTitle: 'संस्कृतकक्षाः',
+      sanskritSchedule: 'शनि-रवि सायं',
+      sanskritDesc: 'सर्वेषां कृते सम्भाषणसंस्कृतस्य तथा वैदिकवाङ्मयस्य पाठः।',
+
+      // Vision
+      visionTitle: '🌟 मठस्य सङ्कल्पः',
+      visionDesc: 'मठः सनातनधर्मस्य, वेदानां, संस्कृतस्य च संवर्धने सदा अग्रणी वर्तते।',
+      vLearning: 'आध्यात्मिकज्ञानम्',
+      vSanskrit: 'संस्कृतप्रसारः',
+      vCulture: 'सांस्कृतिकपुनरुत्थानम्',
+      vDharma: 'सनातनधर्मः',
+
+      // 4 Pillars
+      p1Title: 'जगद्गुरुपरम्परा',
+      p1Desc: 'जगद्गुरु श्री आदिशङ्कराचार्याणां तथा शृङ्गेरीपीठाधीशानां परम्परायाः नमनम्।',
+      p2Title: 'नित्यपूजा तथा सेवाः',
+      p2Desc: 'दैनिकवैदिकविधयः, पञ्चामृताभिषेकः, चन्द्रमौलीश्वरपूजा, महामङ्गलारती च।',
+      p3Title: 'अन्नदानं महादानम्',
+      p3Desc: 'मठमागतानां भक्तानां विद्यार्थिनां च कृते नित्यमहाप्रसादवितरणम्।',
+      p4Title: 'वेदः तथा संस्कृतम्',
+      p4Desc: 'पारम्परिकवेदशिक्षणं स्तोत्रपठनं तथा सांस्कृतिकप्रवचनानि।',
+
+      // Seva Banner
+      sevaBannerTitle: '🛕 ई-सेवापञ्जीकरणं तथा भक्तसमर्पणम्',
+      sevaBannerDesc: 'नित्यपूजासु अन्नदाने च कुत्रापि स्थित्वा भागं गृह्णन्तु। तत्क्षणमेव आधिकारिकं डिजिटल-पावतीपत्रं प्राप्नुवन्तु।',
+      bookSevaBtn: 'ई-सेवा समर्प्यताम् →',
+      contactOfficeBtn: 'मठकार्यालयसम्पर्कः',
+
+      // Activities & Announcements
+      activitiesTitle: 'साम्प्रतिकानि धार्मिककार्याणि',
+      activitiesSub: 'आगामिनः उत्सवाः हवनानि च',
+      viewAllActivities: 'सर्वाणि कार्याणि पश्यन्तु →',
+      noActivities: 'साम्प्रतं कोऽपि कार्यक्रमः नास्ति।',
+      noActivitiesSub: 'शीघ्रमेव नूतनविवरणानि प्रकाश्यन्ते।',
+
+      // Announcements
       announcementsTitle: 'महत्वपूर्णाः घोषणाः',
-      announcementsDescription: 'महत्वपूर्णैः समाचारैः सूचनाभिः च अद्यतनाः भवत',
-      noAnnouncements: 'साम्प्रतं कोऽपि घोषणा नास्ति',
-      noAnnouncementsSub: 'महत्वपूर्णाः अद्यतनाः अत्र दृश्यन्ते',
-      viewAllAnnouncements: 'सर्वाः घोषणाः पश्यत →',
-      
-      // Contact Section
-      contactTitle: 'सम्पर्कं कुरुत',
-      contactDescription: 'भवतः श्रवणाय अस्माकं इच्छा अस्ति। अस्मभ्यं सन्देशं प्रेषयत!',
-      visitUs: 'अस्मान् भेटत',
-      callUs: 'अस्मान् आह्वयत',
-      emailUs: 'अस्मभ्यं ईमेलं कुरुत',
-      address: 'कोलार शङ्कर मठः, कोटे, कोलारः, कर्नाटकः, भारतम्',
-      phone: '+91 83101 51359',
-      phoneHours: 'सोमः - शनिः, प्रातः 9 - सायं 6',
-      email: 'info@kolarshankaramutt.org',
-      emailResponse: 'अस्माभिः 24 घण्टेषु प्रतिक्रिया दीयते',
-      fullName: 'पूर्णं नाम',
-      emailAddress: 'ईमेल पता',
-      message: 'सन्देशः',
-      sendMessage: 'सन्देशं प्रेषयत',
-      sending: 'प्रेषणं क्रियते...',
-      enterName: 'भवतः पूर्णं नाम प्रवेशयत',
-      enterEmail: 'भवतः ईमेल प्रवेशयत',
-      enterMessage: 'अस्माभिः कथं साहाय्यं कर्तुं शक्नुमः इति कथयत...',
-      
-      // Footer
-      copyright: '© 2024 कोलार शङ्कर मठः। सर्वे अधिकाराः संरक्षिताः।',
-      contactInfo: 'सम्पर्कः info@kolarshankaramutt.org | दूरभाषः +91 83101 51359',
-      
+      announcementsSub: 'मठस्य परिपत्राणि सेवासारिण्यश्च',
+      viewAllAnnouncements: 'सर्वाः घोषणाः पश्यन्तु →',
+      noAnnouncements: 'साम्प्रतं कोऽपि घोषणा नास्ति।',
+      noAnnouncementsSub: 'नूतनाः सूचकाः अत्र आगमिष्यन्ति।',
+
       // Common
-      loading: 'पवित्रं विषयं लोड् क्रियते...',
-      error: 'विषयं लोड् कर्तुं अशक्यम्। कृपया भवतः सम्पर्कं परीक्षयत।',
-      tryAgain: 'पुनः प्रयत्नं कुरुत',
+      readDetails: 'विवरणं पठन्तु →',
+      close: 'पिदधतु',
+      loading: 'विषयः आरोप्यते...',
+      error: 'विषयं लोड् कर्तुं अशक्यम्।',
+      retry: 'पुनः प्रयत्नः',
       date: 'दिनाङ्कः',
       title: 'शीर्षिका',
-      description: 'विवरणम्'
+      attachedMedia: 'संलग्नानि चित्राणि तथा पत्राणि',
+      openNewTab: 'नूतने विण्डोमध्ये उद्घाटयतु',
+      pdfDoc: 'PDF पत्रम्',
+
+      // Footer
+      quickLinks: 'शीघ्रसम्पर्काः',
+      darshanTimings: 'दर्शनसमयाः',
+      contactUs: 'सम्पर्कं कुर्वन्तु',
+      footerAbout: 'कोलार शङ्करमठः श्रीमदादिशङ्कराचार्यैः संस्थापितायाः अद्वैतपरम्परायाः पालने तत्परः पवित्रः मठः वर्तते। धर्मरक्षणाय समाजकल्याणाय च समर्पितः।'
     },
-    
+
+    // =========================================================================
+    // TELUGU (తెలుగు)
+    // =========================================================================
     te: {
       // Navigation
       home: 'హోమ్',
@@ -222,73 +443,139 @@ export const LanguageProvider = ({ children }) => {
       announcements: 'ప్రకటనలు',
       contact: 'సంప్రదింపులు',
       adminPanel: 'అడ్మిన్ ప్యానెల్',
-      
-      // Hero Section
+      donationNav: 'కానుక / సేవ',
+
+      // Hero / Masthead
       heroTitle: 'శ్రీ కోలార శృంగేరి శంకర మఠం',
       heroSubtitle: 'కోలార శృంగేరి శంకర మఠం',
-      heroDescription: 'ఆది శంకరాచార్యుల ఉపదేశాలను సంరక్షించడానికి మరియు వ్యాప్తి చేయడానికి అంకితమైన పవిత్ర సంస్థ. సనాతన ధర్మం యొక్క సమృద్ధమైన ఆధ్యాత్మిక వారసత్వాన్ని మేము స్వాగతం చేస్తున్నాము. అన్ని వర్గాల భక్తులు మరియు అన్వేషకులను మా వివిధ ఆధ్యాత్మిక కార్యక్రమాలు, ఉపన్యాసాలు మరియు సాంస్కృతిక కార్యక్రమాలలో పాల్గొనడానికి ఆహ్వానిస్తున్నాము.',
-      heroCTA: 'మా ఆధ్యాత్మిక కార్యక్రమాలు, ముఖ్య ప్రకటనలు మరియు సమాజంతో కనెక్ట్ అవ్వండి',
-      
-      // Welcome Section
-      welcomeTitle: 'స్వాగతం - స్వాగతం',
-      welcomeDescription: 'కోలార శంకర మఠం యొక్క పవిత్ర ప్రాంతాలకు స్వాగతం, ప్రాచీన జ్ఞానం ఆధునిక భక్తిని కలుసుకునే ఆధ్యాత్మిక ఆశ్రయం',
-      welcomeText1: 'కోలార శంకర మఠం ఆది శంకరాచార్యులచే స్థాపించబడిన ఉన్నత సంప్రదాయాలను అనుసరించి ఆధ్యాత్మిక జ్ఞానోదయం యొక్క దీపస్తంభంగా నిలిచింది. మా సంస్థ ఆధ్యాత్మిక విద్య, సాంస్కృతిక సంరక్షణ మరియు సమాజ సేవ కేంద్రంగా పనిచేస్తుంది.',
-      welcomeText2: 'అన్ని వర్గాల భక్తులు మరియు అన్వేషకులను మా వివిధ ఆధ్యాత్మిక కార్యక్రమాలు, ఉపన్యాసాలు మరియు సాంస్కృతిక కార్యక్రమాలలో పాల్గొనడానికి ఆహ్వానిస్తున్నాము.',
-      
-      // Activities Section
-      activitiesTitle: 'ఇటీవలి ఆధ్యాత్మిక కార్యక్రమాలు',
-      activitiesDescription: 'మా ఇటీవలి ఆధ్యాత్మిక మరియు సాంస్కృతిక కార్యక్రమాలను అన్వేషించండి',
-      noActivities: 'ప్రస్తుతం ఏ కార్యక్రమాలూ షెడ్యూల్ చేయబడలేదు',
-      noActivitiesSub: 'రాబోయే ఆధ్యాత్మిక కార్యక్రమాల కోసం త్వరలో తనిఖీ చేయండి',
+      heroDescription: 'ఆది శంకరాచార్యుల అద్వైత వేదాంత ఉపదేశాలు మరియు దక్షిణామ్నాయ శృంగేరి శ్రీ శారదా పీఠం దివ్య పరంపరను పరిరక్షించే పవిత్ర సంస్థ.',
+      topBarWelcome: 'శ్రీ కోలార శృంగೇరి శంకర మఠం | దక్షిణామ్నాయ శృంగేరి శ్రీ శారదా పీఠం శాఖా మఠం',
+
+      // Darshan Timings & Status
+      darshanOpen: 'దర్శనం అందుబాటులో ఉంది',
+      darshanClosed: 'పూజా కార్యక్రమాల కోసం మూసివేయబడింది',
+      darshanClosesAt1230: 'మధ్యాహ్నం 12:30 వరకు దర్శనం',
+      darshanClosesAt830: 'రాత్రి 08:30 వరకు దర్శనం',
+      nextDarshanPrefix: 'తదుపరి దర్శనం: ',
+      morningDarshan: 'ఉదయ దర్శనం',
+      mahamangalarathi: 'మహా మంగళహారతి',
+      eveningDarshan: 'సాయంత్ర దర్శనం',
+      morningDarshanTime: '08:00 AM – 12:30 PM',
+      mahamangalarathiTime: '12:00 PM & 08:00 PM',
+      eveningDarshanTime: '06:00 PM – 08:30 PM',
+
+      // Quick Actions
+      onlineSeva: 'ఆన్‌లైన్ సేవ & కానుక',
+      onlineSevaSub: 'డిజిటల్ సేవలు',
+      spiritualActivities: 'ఆధ్యాత్మిక కార్యక్రమాలు',
+      spiritualActivitiesSub: 'పూజలు & ఉత్సవాలు',
+      muttAnnouncements: 'మఠం ప్రకటనలు',
+      muttAnnouncementsSub: 'సర్క్యులర్లు & నోటీసులు',
+      visitContact: 'సందర్శన & సంప్రదింపులు',
+      visitContactSub: 'మఠం చిరునామా',
+
+      // Sacred Shloka
+      sacredShloka: '॥ ॐ శ్రీ శారదాంబా ప్రసన్న ॐ ॥',
+
+      // Heritage Section
+      heritageTitle: 'దక్షిణామ్నాయ శృంగేరి శ్రీ శారదా పీఠం శాఖా మఠం, కోలార',
+      heritageSubtitle: 'కోలార శృంగేరి శ్రీశంకర మఠం — దక్షిణామ్నాయ శ్రీ శారదా పీఠం, శృంగేరి పవిత్ర శాఖా మఠం',
+      heritageIntro: 'కోలార శృంగేరి శ్రీ శంకర మఠం 1928 లో జగద్గురు శ్రీ ఆది శంకరాచార్యుల పవిత్ర పరంపర దివ్య ఆశీస్సులతో స్థాపించబడింది. సనాతన ధర్మ రక్షణ, వేద విజ్ఞానం మరియు సంస్కృత సంస్కృతికి దివ్య కేంద్రంగా విరాజిల్లుతోంది.',
+
+      // Milestones
+      milestonesHeading: '📜 పవిత్ర చరిత్ర మరియు ముఖ్య మైలురాళ్ళు',
+      m1928Title: 'మఠం స్థాపన',
+      m1928Desc: 'జగద్గురు శ్రీ ఆది శంకరాచార్యుల అద్వైత పరంపర ఆశీస్సులతో 1928 లో స్థాపించబడింది.',
+      m1930Title: 'శ్రీ శంకరాచార్య ప్రతిష్ఠాపన',
+      m1930Desc: 'శ్రీ ఆది శంకరాచార్యుల పవిత్ర విగ్రహ ప్రతిష్ఠాపన జరిగి ఆధ్యాత్మిక పునాది వేయబడింది.',
+      m1965Title: 'శ్రీ శారదాంబ కుంభాభిషేకం',
+      m1965Desc: 'అవణి మఠం పూజ్యులు శ్రీ అభినవోదండ విద్యారణ్యభారతీ స్వామివారి చేతుల మీదుగా కుంభాభిషేకం జరిగింది.',
+      m2019Title: 'శృంగేరి పీఠం మార్గదర్శకత్వం',
+      m2019Desc: '2019 లో శృంగేరి శ్రీ శారదా పీఠం మార్గదర్శకత్వంలోకి అధికారికంగా తీసుకురాబడింది.',
+      mPresentTitle: 'ధర్మాధికారి గారి నేతృత్వం',
+      mPresentDesc: 'ప్రస్తుతం శ్రీ రామకృష్ణ జె. ఎన్. గారు ధర్మాధికారిగా మఠాన్ని భక్తిశ్రద్ధలతో నడిపిస్తున్నారు.',
+
+      // Weekly Programs
+      programsHeading: '🪔 మఠంలో జరిగే నిత్య మరియు వారపు కార్యక్రమాలు',
+      discoursesTitle: 'ఆధ్యాత్మిక ప్రవచనాలు',
+      discoursesSchedule: 'క్రమం తప్పని సత్సంగాలు',
+      discoursesDesc: 'పండితులచే ధర్మం, ఉపనిషత్తులు మరియు అద్వైత వేదాంతంపై ప్రత్యేక ఉపన్యాసాలు.',
+      stotraTitle: 'స్తోత్ర పాఠాలు',
+      stotraSchedule: 'ప్రతి గురువారం',
+      stotraDesc: 'శ్రీ శంకరుల స్తోత్రాలు, సౌందర్య లహరి మరియు భక్తి స్తోత్రాల అభ్యాసం.',
+      sanskritTitle: 'సంస్కృత తరగతులు',
+      sanskritSchedule: 'శని & ఆదివారం సాయంత్రం',
+      sanskritDesc: 'అన్ని వయసుల వారికి సరళ సంస్కృత సంభాషణ మరియు వ్యాకరణ బోధన.',
+
+      // Vision
+      visionTitle: '🌟 మఠం లక్ష్యం & సంకల్పం',
+      visionDesc: 'వేద విజ్ఞానం, సంస్కృత ప్రచారం, మరియు సనాతన ధర్మ పునరుజ్జీవనానికి మఠం సదా కట్టుబడి ఉంది.',
+      vLearning: 'ఆధ్యాత్మిక విజ్ఞానం',
+      vSanskrit: 'సంస్కృత ప్రచారం',
+      vCulture: 'సాంస్కృతిక పునరుజ్జీవనం',
+      vDharma: 'సనాతన ధర్మం',
+
+      // 4 Pillars
+      p1Title: 'జగద్గురు పరంపర',
+      p1Desc: 'జగద్గురు శ్రీ ఆది శంకరాచార్యులు మరియు శృంగేరి జగద్గురువుల దివ్య పరంపరకు వందనం.',
+      p2Title: 'నిత్య పూజలు & సేవలు',
+      p2Desc: 'దైనందిన వైదిక పూజలు, పంచామృతాభిషేకం, చంద్రమౌళీశ్వర పూజ మరియు మంగళహారతి.',
+      p3Title: 'అన్నదానం మహాదానం',
+      p3Desc: 'విచ్చేసే భక్తులకు, విద్యార్థులకు భక్తితో నిత్య అన్నప్రసాద వితరణ.',
+      p4Title: 'వేదం & సంస్కృతం',
+      p4Desc: 'సాంప్రదాయ వేద విద్య, సంస్కృత శ్లోక పఠనం మరియు ఆధ్యాత్మిక ప్రవచనాలు.',
+
+      // Seva Banner
+      sevaBannerTitle: '🛕 ఆన్‌లైన్ సేవా నమోదు & భక్తుల కానుక',
+      sevaBannerDesc: 'నిత్య పూజలు, ప్రత్యేక అర్చనలు, అభిషేకాలు మరియు అన్నదాన సేవల్లో ఎక్కడి నుంచైనా పాల్గొనండి. తక్షణ అధికారిక డిజిటల్ రసీదును పొందండి.',
+      bookSevaBtn: 'ఆన్‌లైన్ సేవ చేయండి →',
+      contactOfficeBtn: 'మఠం కార్యాలయం',
+
+      // Activities & Announcements
+      activitiesTitle: 'ఆధ్యాత్మిక కార్యక్రమాలు',
+      activitiesSub: 'రాబోయే ఉత్సవాలు, హోమాలు మరియు సాంస్కృతిక వేడుకలు',
       viewAllActivities: 'అన్ని కార్యక్రమాలను చూడండి →',
-      
-      // Announcements Section
+      noActivities: 'ప్రస్తుతం ఏ కార్యక్రమాలూ షెడ్యూల్ చేయబడలేదు.',
+      noActivitiesSub: 'త్వరలోనే వివరాలు ప్రచురించబడతాయి.',
+
+      // Announcements
       announcementsTitle: 'ముఖ్య ప్రకటనలు',
-      announcementsDescription: 'ముఖ్య వార్తలు మరియు సమాచారంతో నవీకృతం అవ్వండి',
-      noAnnouncements: 'ప్రస్తుతం ఏ ప్రకటనలూ లేవు',
-      noAnnouncementsSub: 'ముఖ్య నవీకరణలు ఇక్కడ కనిపిస్తాయి',
+      announcementsSub: 'మఠం సర్క్యులర్లు, సేవా సమయాలు మరియు ముఖ్య సమాచారం',
       viewAllAnnouncements: 'అన్ని ప్రకటనలను చూడండి →',
-      
-      // Contact Section
-      contactTitle: 'సంప్రదించండి',
-      contactDescription: 'మీ నుండి వినడానికి మాకు ఇష్టం. మాకు సందేశం పంపండి!',
-      visitUs: 'మమ్మల్ని సందర్శించండి',
-      callUs: 'మమ్మల్ని కాల్ చేయండి',
-      emailUs: 'మాకు ఇమెయిల్ చేయండి',
-      address: 'కోలార శంకర మఠం, కోట, కోలార్, కర్ణాటక, భారతదేశం',
-      phone: '+91 83101 51359',
-      phoneHours: 'సోమ - శని, ఉదయం 9 - సాయంత్రం 6',
-      email: 'info@kolarshankaramutt.org',
-      emailResponse: 'మేము 24 గంటల్లో ప్రతిస్పందిస్తాము',
-      fullName: 'పూర్తి పేరు',
-      emailAddress: 'ఇమెయిల్ చిరునామా',
-      message: 'సందేశం',
-      sendMessage: 'సందేశం పంపండి',
-      sending: 'పంపుతోంది...',
-      enterName: 'మీ పూర్తి పేరును నమోదు చేయండి',
-      enterEmail: 'మీ ఇమెయిల్ నమోదు చేయండి',
-      enterMessage: 'మేము మీకు ఎలా సహాయం చేయగలమో చెప్పండి...',
-      
-      // Footer
-      copyright: '© 2024 కోలార శంకర మఠం. అన్ని హక్కులు కాపాడబడ్డాయి.',
-      contactInfo: 'సంప్రదింపులు: info@kolarshankaramutt.org | ఫోన్: +91 83101 51359',
-      
+      noAnnouncements: 'ప్రస్తుతం ఏ ప్రకటనలూ లేవు.',
+      noAnnouncementsSub: 'ముఖ్య నవీకరణలు ఇక్కడ ప్రచురించబడతాయి.',
+
       // Common
-      loading: 'పవిత్రమైన విషయాన్ని లోడ్ చేస్తోంది...',
-      error: 'విషయాన్ని లోడ్ చేయలేకపోయాము. దయచేసి మీ కనెక్షన్ తనిఖీ చేయండి.',
-      tryAgain: 'మళ్లీ ప్రయత్నించండి',
+      readDetails: 'వివరాలు చదవండి →',
+      close: 'మూసివేయి',
+      loading: 'సమాచారం లోడ్ అవుతోంది...',
+      error: 'సమాచారాన్ని లోడ్ చేయలేకపోయాము.',
+      retry: 'మళ్లీ ప్రయత్నించండి',
       date: 'తేదీ',
       title: 'శీర్షిక',
-      description: 'వివరణ'
+      attachedMedia: 'జతచేసిన పత్రాలు & చిత్రాలు',
+      openNewTab: 'కొత్త ట్యాబ్‌లో తెరవండి',
+      pdfDoc: 'PDF పత్రం',
+
+      // Footer
+      quickLinks: 'త్వరిత లింకులు',
+      darshanTimings: 'దర్శన సమయాలు',
+      contactUs: 'మమ్మల్ని సంప్రదించండి',
+      footerAbout: 'కోలార శృంగేరి శ్రీశంకర మఠం జగద్గురు శ్రీ ఆది శంకరాచార్యుల అద్వైత వేదాంత పరంపరను పరిరక్షించే పవిత్ర సంస్థ. సనాతన ధర్మం, వేద విద్య మరియు సమాజ సేవకు అంకితమైనది.'
     }
   };
 
-  const changeLanguage = (langCode) => {
-    setCurrentLanguage(langCode);
-  };
-
   const t = (key) => {
-    return translations[currentLanguage][key] || translations.en[key] || key;
+    if (translations[currentLanguage] && translations[currentLanguage][key]) {
+      return translations[currentLanguage][key];
+    }
+    if (translations.kn && translations.kn[key]) {
+      return translations.kn[key];
+    }
+    if (translations.en && translations.en[key]) {
+      return translations.en[key];
+    }
+    return key;
   };
 
   return (
@@ -297,3 +584,5 @@ export const LanguageProvider = ({ children }) => {
     </LanguageContext.Provider>
   );
 };
+
+export default LanguageContext;

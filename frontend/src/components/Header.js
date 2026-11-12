@@ -16,7 +16,7 @@ export default function Header() {
       <div className="header-top-bar">
         <div className="container header-top-content">
           <span className="header-top-welcome">
-            ಕೋಲಾರ ಶೃಂಗೇರಿ ಶ್ರೀಶಂಕರ ಮಠ | Kolar Sringeri SriShankara Mutt
+            {t('topBarWelcome')}
           </span>
           <div className="header-top-controls">
             <ThemeToggle />

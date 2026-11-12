@@ -76,7 +76,7 @@ function Navbar() {
               className={({ isActive }) => `nav-link nav-link-highlight ${isActive ? 'active' : ''}`}
               onClick={closeMobileMenu}
             >
-              <span>Donation / ಕಾಣಿಕೆ</span>
+              <span>{t('donationNav')}</span>
               <span className="nav-badge" aria-hidden="true">Seva</span>
             </NavLink>
           </li>
